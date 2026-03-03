@@ -1,1 +1,24 @@
-<!DOCTYPE html>\n<html lang='en'>\n<head>\n    <meta charset='UTF-8'>\n    <meta name='viewport' content='width=device-width, initial-scale=1.0'>\n    <title>Jumpscare Page</title>\n    <style>\n        body {\n            margin: 0;\n            padding: 0;\n            overflow: hidden;\n        }\n        .jumpscare-overlay {\n            position: fixed;\n            top: 0;\n            left: 0;\n            width: 100%;\n            height: 100%;\n            background: rgba(0, 0, 0, 0.8);\n            display: flex;\n            justify-content: center;\n            align-items: center;\n            opacity: 0;\n            visibility: hidden;\n            transition: opacity 0.5s ease;\n        }\n        .jumpscare-overlay.visible {\n            opacity: 1;\n            visibility: visible;\n        }\n        .jumpscare-image {\n            width: 80%;\n            max-width: 600px;\n        }\n    </style>\n</head>\n<body>\n    <div class='jumpscare-overlay' id='jumpscareOverlay'>\n        <img src='your-jumpscare-image-url.png' alt='Jumpscare' class='jumpscare-image'>\n    </div>\n    <script>\n        window.onload = function() {\n            const overlay = document.getElementById('jumpscareOverlay');\n            setTimeout(() => {\n                overlay.classList.add('visible');\n            }, 1000);  // delay before jumpscare shows\n            setTimeout(() => {\n                overlay.classList.remove('visible');\n            }, 5000); // how long the jumpscare is visible\n        };\n    <\/script>\n</body>\n</html>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Jump Scare Effect</title>
+</head>
+<body>
+    <h1>Welcome to the Jumpscare Page</h1>
+    <img src="image.png" alt="Jump scare image" id="jumpscareImage" style="display:none;">
+    <audio id="jumpscareAudio">
+        <source src="freesound_community-jumpscare-94984.mp3" type="audio/mpeg">
+    </audio>
+
+    <script>
+        window.onload = function() {
+            setTimeout(function() {
+                document.getElementById('jumpscareImage').style.display = 'block';
+                document.getElementById('jumpscareAudio').play();
+            }, 3000); // 3 seconds delay before jumpscare
+        };
+    </script>
+</body>
+</html>
