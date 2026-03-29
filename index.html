@@ -9,9 +9,7 @@
   <style>
     @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap');
     body { font-family: 'Inter', system-ui; }
-    .email-row { transition: all 0.2s; }
     .email-row:hover { background-color: #1f1f1f; }
-    .unread { border-left: 4px solid #ef4444; }
   </style>
 </head>
 <body class="bg-zinc-950 text-zinc-200 min-h-screen">
@@ -119,7 +117,7 @@
     let currentEmail = null;
     let allEmails = [];
 
-    // Simple but effective XSS sanitizer
+    // Strong XSS sanitizer
     function sanitizeHTML(str) {
       if (!str) return '';
       return str
@@ -130,6 +128,29 @@
         .replace(/'/g, '&#039;')
         .replace(/javascript:/gi, '')
         .replace(/on\w+=/gi, '');
+    }
+
+    // Clean email body - removes quoted replies and MIME junk
+    function cleanEmailBody(body) {
+      if (!body) return '';
+
+      let cleaned = body
+        .replace(/--[\w\d=]+/g, '')                    // Remove MIME boundaries
+        .replace(/Content-Type:.*?\r\n/gi, '')         // Remove content-type headers
+        .replace(/charset="UTF-8"/gi, '')
+        .replace(/On .* wrote:[\s\S]*?>/gi, '')        // Remove quoted "On ... wrote:"
+        .replace(/On Sun, Mar 29, 2026.*?</gi, '')     // Remove your specific date format
+        .replace(/> test/g, '')                        // Remove common quoted test
+        .replace(/\r\n/g, '\n')
+        .trim();
+
+      // Remove everything after "On [date] wrote:" (quoted reply)
+      const quoteIndex = cleaned.search(/On .* at .* wrote:/i);
+      if (quoteIndex !== -1) {
+        cleaned = cleaned.substring(0, quoteIndex).trim();
+      }
+
+      return cleaned;
     }
 
     async function loadInbox() {
@@ -150,7 +171,7 @@
       let html = "";
 
       emails.forEach(email => {
-        const cleanBody = sanitizeHTML((email.body || "").replace(/--[\w\d=]+/g, "").replace(/Content-Type:.*?\r\n/gi, "").trim());
+        const cleanBody = cleanEmailBody(email.body);
         
         html += `
           <div onclick="openEmail(${email.id})" class="email-row bg-zinc-900 border border-zinc-800 p-5 rounded-2xl cursor-pointer hover:border-red-600">
@@ -159,7 +180,7 @@
               <div class="text-xs text-zinc-500">${email.received_at}</div>
             </div>
             <div class="font-semibold mt-1">${sanitizeHTML(email.subject || '(No Subject)')}</div>
-            <div class="text-sm text-zinc-400 mt-2 line-clamp-2">${cleanBody.substring(0, 130)}...</div>
+            <div class="text-sm text-zinc-400 mt-2 line-clamp-2">${sanitizeHTML(cleanBody.substring(0, 130))}...</div>
           </div>`;
       });
 
@@ -172,7 +193,6 @@
         renderEmails(allEmails);
         return;
       }
-
       const filtered = allEmails.filter(email => 
         (email.subject || "").toLowerCase().includes(term) ||
         (email.from_email || "").toLowerCase().includes(term) ||
@@ -189,13 +209,8 @@
       document.getElementById("viewer-from").innerHTML = sanitizeHTML(currentEmail.from_email);
       document.getElementById("viewer-time").textContent = currentEmail.received_at;
 
-      let cleanBody = (currentEmail.body || "")
-        .replace(/--[\w\d=]+/g, "")
-        .replace(/Content-Type:.*?\r\n/gi, "")
-        .replace(/\r\n/g, "<br>");
-
-      // Final sanitization before display
-      document.getElementById("viewer-body").innerHTML = sanitizeHTML(cleanBody);
+      const cleanBody = cleanEmailBody(currentEmail.body);
+      document.getElementById("viewer-body").innerHTML = sanitizeHTML(cleanBody).replace(/\n/g, '<br>');
 
       document.getElementById("reply-text").value = "";
       document.getElementById("viewer").classList.remove("hidden");
@@ -269,14 +284,14 @@
           closeComposeModal();
           loadInbox();
         } else {
-          alert("Failed to send message");
+          alert("Failed to send");
         }
       } catch (e) {
         alert("Error sending message");
       }
     }
 
-    // Auto refresh every 6 seconds
+    // Auto refresh
     setInterval(loadInbox, 6000);
     window.onload = loadInbox;
   </script>
