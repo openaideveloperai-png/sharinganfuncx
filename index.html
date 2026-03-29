@@ -10,10 +10,12 @@
     @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap');
     body { font-family: 'Inter', system-ui; }
     .email-row:hover { background-color: #1f1f1f; }
+    .modal { animation: modalPop 0.3s ease-out; }
+    @keyframes modalPop { from { opacity: 0; transform: scale(0.95); } to { opacity: 1; transform: scale(1); } }
   </style>
 </head>
-
 <body class="bg-zinc-950 text-zinc-200 min-h-screen">
+
   <div class="flex h-screen">
 
     <!-- Sidebar -->
@@ -65,10 +67,12 @@
       <div id="email-list" class="flex-1 overflow-auto p-4 space-y-2"></div>
     </div>
 
-    <!-- Viewer -->
+    <!-- Email Viewer -->
     <div id="viewer" class="w-0 lg:w-2/5 border-l border-zinc-800 bg-zinc-900 overflow-auto hidden lg:flex flex-col">
       <div class="p-6 border-b border-zinc-800 flex items-center">
-        <button onclick="closeViewer()" class="text-zinc-400 hover:text-white">← Back</button>
+        <button onclick="closeViewer()" class="text-zinc-400 hover:text-white flex items-center gap-2">
+          ← Back
+        </button>
       </div>
 
       <div class="p-6 flex-1 overflow-auto">
@@ -77,153 +81,198 @@
           <div id="viewer-from" class="font-medium text-red-400"></div>
           <div id="viewer-time" class="text-xs text-zinc-500 ml-auto"></div>
         </div>
-        <div id="viewer-body" class="text-zinc-300 whitespace-pre-wrap"></div>
+        <div id="viewer-body" class="text-zinc-300 whitespace-pre-wrap leading-relaxed"></div>
       </div>
 
-      <div class="p-6 border-t border-zinc-800">
-        <textarea id="reply-text" rows="3" class="w-full bg-zinc-900 border border-zinc-700 rounded-2xl p-4"></textarea>
-        <button onclick="sendReply()" class="mt-4 w-full bg-red-600 py-3.5 rounded-2xl">Send Reply</button>
+      <!-- Inline Reply -->
+      <div class="p-6 border-t border-zinc-800 bg-zinc-950">
+        <textarea id="reply-text" rows="3" placeholder="Write your reply here..." 
+                  class="w-full bg-zinc-900 border border-zinc-700 rounded-2xl p-4 text-sm focus:outline-none focus:border-red-600"></textarea>
+        <button onclick="sendReply()" 
+                class="mt-4 w-full bg-red-600 hover:bg-red-700 py-3.5 rounded-2xl font-medium flex items-center justify-center gap-2">
+          <i class="fas fa-paper-plane"></i> Send Reply
+        </button>
       </div>
     </div>
-
   </div>
 
-<script>
-const WORKER_URL = "https://sharingan-mail-worker.openaideveloperai.workers.dev";
-
-let currentEmail = null;
-let allEmails = [];
-let knownIds = new Set();
-
-/* utils */
-function sanitizeHTML(str){
-  return (str||"").replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[m]));
-}
-
-function cleanEmailBody(body){
-  return (body||"").replace(/On .* wrote:[\s\S]*/i,'').trim();
-}
-
-/* render */
-function renderEmails(emails){
-  const container = document.getElementById("email-list");
-  container.innerHTML = "";
-
-  emails.forEach(email => {
-    knownIds.add(email.id);
-    container.appendChild(createEmailEl(email));
-  });
-}
-
-function createEmailEl(email){
-  const div = document.createElement("div");
-  div.className = "email-row bg-zinc-900 border border-zinc-800 p-5 rounded-2xl cursor-pointer hover:border-red-600";
-
-  div.onclick = () => openEmail(email.id);
-
-  div.innerHTML = `
-    <div class="flex justify-between">
-      <div class="font-medium text-red-400">${sanitizeHTML(email.from_email)}</div>
-      <div class="text-xs text-zinc-500">${email.received_at}</div>
+  <!-- Compose Modal -->
+  <div id="compose-modal" class="hidden fixed inset-0 bg-black/80 flex items-center justify-center z-50">
+    <div class="modal bg-zinc-900 w-full max-w-lg mx-4 rounded-3xl p-8">
+      <h2 class="text-xl font-semibold mb-6">New Message</h2>
+      
+      <input id="compose-to" placeholder="To: email@gmail.com" 
+             class="w-full bg-zinc-800 border border-zinc-700 p-4 rounded-2xl mb-4 focus:outline-none focus:border-red-600">
+      
+      <input id="compose-subject" placeholder="Subject" 
+             class="w-full bg-zinc-800 border border-zinc-700 p-4 rounded-2xl mb-4 focus:outline-none focus:border-red-600">
+      
+      <textarea id="compose-body" rows="10" placeholder="Write your message here..." 
+                class="w-full bg-zinc-800 border border-zinc-700 p-4 rounded-3xl mb-6 focus:outline-none focus:border-red-600"></textarea>
+      
+      <div class="flex gap-4">
+        <button onclick="closeComposeModal()" class="flex-1 py-4 border border-zinc-700 rounded-2xl">Cancel</button>
+        <button onclick="sendCompose()" class="flex-1 bg-red-600 py-4 rounded-2xl font-medium">Send</button>
+      </div>
     </div>
-    <div class="font-semibold mt-1">${sanitizeHTML(email.subject || '(No Subject)')}</div>
-    <div class="text-sm text-zinc-400 mt-2">
-      ${sanitizeHTML(cleanEmailBody(email.body).substring(0, 130))}...
-    </div>
-  `;
-  return div;
-}
+  </div>
 
-/* initial load */
-async function loadInbox(){
-  const container = document.getElementById("email-list");
-  container.innerHTML = `<div class="text-center py-20 text-zinc-500">Loading...</div>`;
+  <script>
+    const WORKER_URL = "https://sharingan-mail-worker.openaideveloperai.workers.dev";
+    let currentEmail = null;
+    let allEmails = [];
 
-  try{
-    const res = await fetch(`${WORKER_URL}/inbox`);
-    allEmails = await res.json();
-    renderEmails(allEmails);
-  }catch{
-    container.innerHTML = `<div class="text-red-400 text-center py-20">Failed</div>`;
-  }
-}
+    function sanitizeHTML(str) {
+      return (str || "").replace(/[&<>"']/g, m => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#039;' })[m]);
+    }
 
-/* SMART UPDATE */
-async function checkNewEmails(){
-  try{
-    const res = await fetch(`${WORKER_URL}/inbox`);
-    const newData = await res.json();
+    function cleanEmailBody(body) {
+      return (body || "")
+        .replace(/--[\w\d=]+/g, '')
+        .replace(/Content-Type:.*?\r\n/gi, '')
+        .replace(/On .* wrote:[\s\S]*/i, '')
+        .replace(/On Sun, Mar 29, 2026.*?</gi, '')
+        .trim();
+    }
 
-    const container = document.getElementById("email-list");
+    function renderEmails(emails) {
+      const container = document.getElementById("email-list");
+      container.innerHTML = "";
 
-    newData.forEach(email => {
-      if (!knownIds.has(email.id)) {
-        knownIds.add(email.id);
-        allEmails.unshift(email);
+      emails.forEach(email => {
+        const cleanBody = cleanEmailBody(email.body);
+        const div = document.createElement("div");
+        div.className = "email-row bg-zinc-900 border border-zinc-800 p-5 rounded-2xl cursor-pointer hover:border-red-600";
+        div.innerHTML = `
+          <div class="flex justify-between">
+            <div class="font-medium text-red-400">${sanitizeHTML(email.from_email)}</div>
+            <div class="text-xs text-zinc-500">${email.received_at}</div>
+          </div>
+          <div class="font-semibold mt-1">${sanitizeHTML(email.subject || '(No Subject)')}</div>
+          <div class="text-sm text-zinc-400 mt-2">${sanitizeHTML(cleanBody.substring(0, 130))}...</div>
+        `;
+        div.onclick = () => openEmail(email.id);
+        container.appendChild(div);
+      });
 
-        const el = createEmailEl(email);
-        container.prepend(el);
+      if (emails.length === 0) {
+        container.innerHTML = `<div class="text-center py-20 text-zinc-500">No emails yet</div>`;
       }
-    });
+    }
 
-  }catch{}
-}
+    async function loadInbox() {
+      const container = document.getElementById("email-list");
+      container.innerHTML = `<div class="text-center py-20 text-zinc-500">Loading...</div>`;
 
-/* search */
-function filterEmails(){
-  const term = document.getElementById("search-input").value.toLowerCase();
-  renderEmails(allEmails.filter(email =>
-    (email.subject||"").toLowerCase().includes(term) ||
-    (email.from_email||"").toLowerCase().includes(term) ||
-    (email.body||"").toLowerCase().includes(term)
-  ));
-}
+      try {
+        const res = await fetch(`${WORKER_URL}/inbox`);
+        allEmails = await res.json();
+        renderEmails(allEmails);
+      } catch (e) {
+        container.innerHTML = `<div class="text-red-400 text-center py-20">Failed to load inbox</div>`;
+      }
+    }
 
-/* viewer */
-function openEmail(id){
-  currentEmail = allEmails.find(e => e.id === id);
-  if (!currentEmail) return;
+    function filterEmails() {
+      const term = document.getElementById("search-input").value.toLowerCase().trim();
+      if (!term) return renderEmails(allEmails);
+      
+      const filtered = allEmails.filter(email =>
+        (email.subject || "").toLowerCase().includes(term) ||
+        (email.from_email || "").toLowerCase().includes(term) ||
+        (email.body || "").toLowerCase().includes(term)
+      );
+      renderEmails(filtered);
+    }
 
-  document.getElementById("viewer").classList.remove("hidden");
+    function openEmail(id) {
+      currentEmail = allEmails.find(e => e.id === id);
+      if (!currentEmail) return;
 
-  document.getElementById("viewer-subject").textContent = currentEmail.subject || "(No Subject)";
-  document.getElementById("viewer-from").textContent = currentEmail.from_email;
-  document.getElementById("viewer-time").textContent = currentEmail.received_at;
-  document.getElementById("viewer-body").innerHTML =
-    sanitizeHTML(cleanEmailBody(currentEmail.body)).replace(/\n/g,'<br>');
-}
+      document.getElementById("viewer-subject").textContent = currentEmail.subject || "(No Subject)";
+      document.getElementById("viewer-from").textContent = currentEmail.from_email;
+      document.getElementById("viewer-time").textContent = currentEmail.received_at;
+      document.getElementById("viewer-body").innerHTML = sanitizeHTML(cleanEmailBody(currentEmail.body)).replace(/\n/g, '<br>');
 
-function closeViewer(){
-  document.getElementById("viewer").classList.add("hidden");
-}
+      document.getElementById("reply-text").value = "";
+      document.getElementById("viewer").classList.remove("hidden");
+    }
 
-/* send */
-async function sendReply(){
-  if (!currentEmail) return;
-  const msg = document.getElementById("reply-text").value.trim();
-  if (!msg) return;
+    function closeViewer() {
+      document.getElementById("viewer").classList.add("hidden");
+    }
 
-  await fetch(`${WORKER_URL}/send`,{
-    method:"POST",
-    headers:{'Content-Type':'application/json'},
-    body:JSON.stringify({
-      to: currentEmail.from_email,
-      subject: "Re: " + (currentEmail.subject || ""),
-      message: msg
-    })
-  });
+    async function sendReply() {
+      if (!currentEmail) return;
+      const msg = document.getElementById("reply-text").value.trim();
+      if (!msg) return alert("Write something to reply");
 
-  alert("Sent");
-}
+      const subject = currentEmail.subject.startsWith("Re:") ? currentEmail.subject : `Re: ${currentEmail.subject || ""}`;
 
-/* start */
-window.onload = () => {
-  loadInbox();
-  setInterval(checkNewEmails, 4000); // 🔥 LIVE updates
+      try {
+        const res = await fetch(`${WORKER_URL}/send`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ to: currentEmail.from_email, subject: subject, message: msg })
+        });
 
-  
-};
-</script>
+        if (res.ok) {
+          alert("✅ Reply sent!");
+          document.getElementById("reply-text").value = "";
+          loadInbox();
+        } else {
+          alert("Failed to send reply");
+        }
+      } catch (e) {
+        alert("Error sending reply");
+      }
+    }
 
+    function showComposeModal() {
+      document.getElementById("compose-to").value = "";
+      document.getElementById("compose-subject").value = "";
+      document.getElementById("compose-body").value = "";
+      document.getElementById("compose-modal").classList.remove("hidden");
+      document.getElementById("compose-modal").classList.add("flex");
+    }
+
+    function closeComposeModal() {
+      document.getElementById("compose-modal").classList.add("hidden");
+      document.getElementById("compose-modal").classList.remove("flex");
+    }
+
+    async function sendCompose() {
+      const to = document.getElementById("compose-to").value.trim();
+      const subject = document.getElementById("compose-subject").value.trim();
+      const body = document.getElementById("compose-body").value.trim();
+
+      if (!to || !subject || !body) return alert("Please fill all fields");
+
+      try {
+        const res = await fetch(`${WORKER_URL}/send`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ to, subject, message: body })
+        });
+
+        if (res.ok) {
+          alert("✅ Message sent!");
+          closeComposeModal();
+          loadInbox();
+        } else {
+          alert("Failed to send");
+        }
+      } catch (e) {
+        alert("Error sending message");
+      }
+    }
+
+    // Auto refresh + live new emails
+    setInterval(() => {
+      if (document.getElementById("viewer").classList.contains("hidden")) loadInbox();
+    }, 6000);
+
+    window.onload = loadInbox;
+  </script>
 </body>
 </html>
