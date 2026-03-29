@@ -64,7 +64,7 @@
       </div>
 
       <div id="email-list" class="flex-1 overflow-auto p-4 space-y-2">
-        <!-- Emails loaded here -->
+        <!-- Emails populated by JS -->
       </div>
     </div>
 
@@ -87,7 +87,7 @@
         <div id="viewer-body" class="text-zinc-300 leading-relaxed text-[15.2px] whitespace-pre-wrap"></div>
       </div>
 
-      <!-- Inline Reply Section -->
+      <!-- Inline Reply -->
       <div class="p-6 border-t border-zinc-800 bg-zinc-950">
         <textarea id="reply-text" rows="3" placeholder="Write your reply here..." 
                   class="w-full bg-zinc-900 border border-zinc-700 rounded-2xl p-4 text-sm focus:outline-none focus:border-red-600"></textarea>
@@ -119,6 +119,19 @@
     let currentEmail = null;
     let allEmails = [];
 
+    // Simple but effective XSS sanitizer
+    function sanitizeHTML(str) {
+      if (!str) return '';
+      return str
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#039;')
+        .replace(/javascript:/gi, '')
+        .replace(/on\w+=/gi, '');
+    }
+
     async function loadInbox() {
       const container = document.getElementById("email-list");
       container.innerHTML = `<div class="text-center py-20 text-zinc-500">Loading emails...</div>`;
@@ -126,7 +139,6 @@
       try {
         const res = await fetch(`${WORKER_URL}/inbox`);
         allEmails = await res.json();
-
         renderEmails(allEmails);
       } catch (e) {
         container.innerHTML = `<div class="text-red-400 text-center py-20">Failed to load inbox</div>`;
@@ -138,14 +150,15 @@
       let html = "";
 
       emails.forEach(email => {
-        const cleanBody = (email.body || "").replace(/--[\w=]+/g, "").replace(/Content-Type:.*?\r\n/gi, "").trim();
+        const cleanBody = sanitizeHTML((email.body || "").replace(/--[\w\d=]+/g, "").replace(/Content-Type:.*?\r\n/gi, "").trim());
+        
         html += `
           <div onclick="openEmail(${email.id})" class="email-row bg-zinc-900 border border-zinc-800 p-5 rounded-2xl cursor-pointer hover:border-red-600">
             <div class="flex justify-between">
-              <div class="font-medium text-red-400">${email.from_email}</div>
+              <div class="font-medium text-red-400">${sanitizeHTML(email.from_email)}</div>
               <div class="text-xs text-zinc-500">${email.received_at}</div>
             </div>
-            <div class="font-semibold mt-1">${email.subject || '(No Subject)'}</div>
+            <div class="font-semibold mt-1">${sanitizeHTML(email.subject || '(No Subject)')}</div>
             <div class="text-sm text-zinc-400 mt-2 line-clamp-2">${cleanBody.substring(0, 130)}...</div>
           </div>`;
       });
@@ -154,7 +167,12 @@
     }
 
     function filterEmails() {
-      const term = document.getElementById("search-input").value.toLowerCase();
+      const term = document.getElementById("search-input").value.toLowerCase().trim();
+      if (!term) {
+        renderEmails(allEmails);
+        return;
+      }
+
       const filtered = allEmails.filter(email => 
         (email.subject || "").toLowerCase().includes(term) ||
         (email.from_email || "").toLowerCase().includes(term) ||
@@ -167,8 +185,8 @@
       currentEmail = allEmails.find(e => e.id === id);
       if (!currentEmail) return;
 
-      document.getElementById("viewer-subject").textContent = currentEmail.subject || "(No Subject)";
-      document.getElementById("viewer-from").innerHTML = currentEmail.from_email;
+      document.getElementById("viewer-subject").textContent = sanitizeHTML(currentEmail.subject || "(No Subject)");
+      document.getElementById("viewer-from").innerHTML = sanitizeHTML(currentEmail.from_email);
       document.getElementById("viewer-time").textContent = currentEmail.received_at;
 
       let cleanBody = (currentEmail.body || "")
@@ -176,9 +194,10 @@
         .replace(/Content-Type:.*?\r\n/gi, "")
         .replace(/\r\n/g, "<br>");
 
-      document.getElementById("viewer-body").innerHTML = cleanBody;
-      document.getElementById("reply-text").value = "";
+      // Final sanitization before display
+      document.getElementById("viewer-body").innerHTML = sanitizeHTML(cleanBody);
 
+      document.getElementById("reply-text").value = "";
       document.getElementById("viewer").classList.remove("hidden");
     }
 
@@ -189,9 +208,11 @@
     async function sendReply() {
       if (!currentEmail) return;
       const replyText = document.getElementById("reply-text").value.trim();
-      if (!replyText) return alert("Please write something");
+      if (!replyText) return alert("Please write a reply");
 
-      const subject = currentEmail.subject.startsWith("Re:") ? currentEmail.subject : `Re: ${currentEmail.subject || ""}`;
+      const subject = currentEmail.subject.startsWith("Re:") 
+        ? currentEmail.subject 
+        : `Re: ${currentEmail.subject || ""}`;
 
       try {
         const res = await fetch(`${WORKER_URL}/send`, {
@@ -205,9 +226,9 @@
         });
 
         if (res.ok) {
-          alert("✅ Reply sent!");
+          alert("✅ Reply sent successfully!");
           document.getElementById("reply-text").value = "";
-          loadInbox();        // Refresh to show new reply at top
+          loadInbox();
         } else {
           alert("Failed to send reply");
         }
@@ -236,23 +257,27 @@
 
       if (!to || !subject || !body) return alert("Please fill all fields");
 
-      const res = await fetch(`${WORKER_URL}/send`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ to, subject, message: body })
-      });
+      try {
+        const res = await fetch(`${WORKER_URL}/send`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ to, subject, message: body })
+        });
 
-      if (res.ok) {
-        alert("✅ Message sent!");
-        closeComposeModal();
-        loadInbox();
-      } else {
-        alert("Failed to send");
+        if (res.ok) {
+          alert("✅ Message sent!");
+          closeComposeModal();
+          loadInbox();
+        } else {
+          alert("Failed to send message");
+        }
+      } catch (e) {
+        alert("Error sending message");
       }
     }
 
-    // Auto refresh
-    setInterval(loadInbox, 7000);
+    // Auto refresh every 6 seconds
+    setInterval(loadInbox, 6000);
     window.onload = loadInbox;
   </script>
 </body>
