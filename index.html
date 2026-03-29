@@ -9,63 +9,113 @@
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 
 <style>
-body { background:#0f1115; color:#e4e4e7; font-family: Inter, system-ui; }
-.email-row:hover { background:#1a1d23; }
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap');
+
+body {
+  font-family: 'Inter', system-ui;
+  background: #0f1115;
+}
+
+/* Gmail-ish hover */
+.email-row {
+  transition: 0.15s;
+}
+.email-row:hover {
+  background: #1a1d23;
+  border-color: #ef4444;
+}
+
+/* scrollbar */
+::-webkit-scrollbar { width:8px; }
+::-webkit-scrollbar-thumb { background:#2a2f38; border-radius:10px; }
 </style>
 </head>
 
-<body>
+<body class="text-zinc-200 min-h-screen">
 
 <div class="flex h-screen">
 
 <!-- SIDEBAR -->
 <div class="w-72 bg-[#111318] border-r border-[#1f232b] flex flex-col">
+
   <div class="p-6 flex items-center gap-3">
-    <div class="w-9 h-9 bg-red-500 rounded-xl flex items-center justify-center">F</div>
+    <div class="w-10 h-10 bg-red-500 rounded-xl flex items-center justify-center font-bold text-lg">F</div>
     <div>
-      <h1 class="font-semibold">Function</h1>
+      <h1 class="text-xl font-semibold">Function</h1>
+      <p class="text-xs text-zinc-500">mail panel</p>
     </div>
   </div>
 
   <div class="px-6">
-    <button onclick="showComposeModal()" class="w-full bg-red-500 py-3 rounded-xl">
-      Compose
+    <button onclick="showComposeModal()" 
+      class="w-full bg-red-500 hover:bg-red-600 py-3.5 rounded-xl font-medium flex items-center justify-center gap-2 shadow-lg">
+      <i class="fas fa-pen"></i> Compose
     </button>
+  </div>
+
+  <div class="mt-6 px-4">
+    <div class="px-4 py-2 bg-[#1a1d23] rounded-lg flex items-center gap-2 text-red-400">
+      <i class="fas fa-inbox"></i> Inbox
+    </div>
+  </div>
+
+  <div class="mt-auto p-4 text-xs text-zinc-600 border-t border-[#1f232b]">
+    Function Mail UI
   </div>
 </div>
 
 <!-- MAIN -->
 <div class="flex-1 flex flex-col">
 
-<div class="h-14 border-b border-[#1f232b] flex items-center px-6 gap-4">
-  <input id="search-input" onkeyup="filterEmails()" placeholder="Search"
-    class="bg-[#1a1d23] px-3 py-2 rounded w-80">
+<!-- TOP BAR -->
+<div class="h-14 bg-[#111318] border-b border-[#1f232b] px-6 flex items-center gap-4">
 
-  <button onclick="loadInbox()">Refresh</button>
+  <div class="relative w-96">
+    <input id="search-input" type="text" placeholder="Search mail..."
+      onkeyup="filterEmails()"
+      class="w-full bg-[#1a1d23] border border-[#2a2f38] pl-10 py-2.5 rounded-lg text-sm focus:outline-none focus:border-red-500">
+    <i class="fas fa-search absolute left-3 top-3 text-zinc-500"></i>
+  </div>
+
+  <button onclick="loadInbox()" class="text-zinc-400 hover:text-white">
+    Refresh
+  </button>
+
 </div>
 
-<div id="email-list" class="flex-1 overflow-auto"></div>
+<!-- EMAIL LIST -->
+<div id="email-list" class="flex-1 overflow-auto p-4 space-y-2"></div>
 
 </div>
 
 <!-- VIEWER -->
-<div id="viewer" class="hidden w-2/5 bg-[#111318] border-l border-[#1f232b] flex-col">
+<div id="viewer" class="hidden lg:flex flex-col w-2/5 bg-[#111318] border-l border-[#1f232b]">
 
-<div class="p-4 border-b border-[#1f232b]">
-  <button onclick="closeViewer()">Back</button>
-</div>
+  <div class="p-4 border-b border-[#1f232b]">
+    <button onclick="closeViewer()" class="text-zinc-400 hover:text-white">← Back</button>
+  </div>
 
-<div class="p-6 flex-1 overflow-auto">
-  <div id="viewer-subject"></div>
-  <div id="viewer-from"></div>
-  <div id="viewer-time"></div>
-  <div id="viewer-body"></div>
-</div>
+  <div class="p-6 flex-1 overflow-auto">
+    <div id="viewer-subject" class="text-xl font-semibold mb-4"></div>
 
-<div class="p-4">
-  <textarea id="reply-text"></textarea>
-  <button onclick="sendReply()">Send</button>
-</div>
+    <div class="flex items-center mb-6">
+      <div id="viewer-from" class="text-red-400"></div>
+      <div id="viewer-time" class="ml-auto text-xs text-zinc-500"></div>
+    </div>
+
+    <div id="viewer-body" class="text-sm leading-relaxed whitespace-pre-wrap"></div>
+  </div>
+
+  <div class="p-4 border-t border-[#1f232b] bg-[#0f1115]">
+    <textarea id="reply-text" rows="3"
+      class="w-full bg-[#1a1d23] border border-[#2a2f38] rounded-lg p-3 text-sm focus:outline-none focus:border-red-500"
+      placeholder="Write a reply..."></textarea>
+
+    <button onclick="sendReply()" 
+      class="mt-3 w-full bg-red-500 hover:bg-red-600 py-3 rounded-lg font-medium">
+      Send Reply
+    </button>
+  </div>
 
 </div>
 
@@ -73,28 +123,52 @@ body { background:#0f1115; color:#e4e4e7; font-family: Inter, system-ui; }
 
 <!-- COMPOSE -->
 <div id="compose-modal" class="hidden fixed inset-0 bg-black/70 flex items-center justify-center">
-  <div class="bg-[#111318] p-6">
-    <input id="compose-to" placeholder="To"><br>
-    <input id="compose-subject" placeholder="Subject"><br>
-    <textarea id="compose-body"></textarea><br>
+  <div class="bg-[#111318] w-full max-w-lg mx-4 rounded-xl p-6 shadow-2xl">
 
-    <button onclick="sendCompose()">Send</button>
-    <button onclick="closeComposeModal()">Cancel</button>
+    <h2 class="text-lg font-semibold mb-4">New Message</h2>
+
+    <input id="compose-to" placeholder="To" class="w-full mb-3 bg-[#1a1d23] p-3 rounded-lg">
+    <input id="compose-subject" placeholder="Subject" class="w-full mb-3 bg-[#1a1d23] p-3 rounded-lg">
+    <textarea id="compose-body" rows="8" class="w-full mb-4 bg-[#1a1d23] p-3 rounded-lg"></textarea>
+
+    <div class="flex gap-3">
+      <button onclick="closeComposeModal()" class="flex-1 border border-[#2a2f38] py-3 rounded-lg">
+        Cancel
+      </button>
+      <button onclick="sendCompose()" class="flex-1 bg-red-500 hover:bg-red-600 py-3 rounded-lg font-medium">
+        Send
+      </button>
+    </div>
+
   </div>
 </div>
 
 <!-- TOS -->
-<div id="tos-modal" class="hidden fixed inset-0 bg-black/80 flex items-center justify-center">
-  <div class="bg-[#111318] p-6 max-w-md">
-    <h2>Terms</h2>
-    <p>Do not abuse this system or you will be banned.</p>
-    <button onclick="acceptTOS()">I Agree</button>
+<div id="tos-modal" class="hidden fixed inset-0 bg-black/80 flex items-center justify-center z-50">
+  <div class="bg-[#111318] max-w-md w-full mx-4 p-6 rounded-xl shadow-xl border border-[#2a2f38]">
+
+    <h2 class="text-xl font-semibold mb-4">⚠️ Terms of Service</h2>
+
+    <p class="text-sm text-zinc-400 mb-4">
+      This is a private email system. Abuse will NOT be tolerated.
+    </p>
+
+    <ul class="text-sm text-zinc-400 space-y-2 mb-6">
+      <li>• No spam or mass sending</li>
+      <li>• No illegal or abusive usage</li>
+      <li>• Violations = instant permanent ban</li>
+    </ul>
+
+    <button onclick="acceptTOS()" 
+      class="w-full bg-red-500 hover:bg-red-600 py-3 rounded-lg font-semibold text-white shadow-lg">
+      I Understand & Agree
+    </button>
+
   </div>
 </div>
 
 <script>
 const WORKER_URL = "https://sharingan-mail-worker.openaideveloperai.workers.dev";
-
 let currentEmail=null;
 let allEmails=[];
 
@@ -111,24 +185,25 @@ function acceptTOS(){
 
 /* utils */
 function sanitizeHTML(str){
-  return (str||"").replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[m]));
+  if (!str) return '';
+  return str.replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[m]));
 }
 
 function cleanEmailBody(body){
-  if(!body) return '';
+  if (!body) return '';
   return body.replace(/On .* wrote:[\s\S]*/i,'').trim();
 }
 
 /* inbox */
 async function loadInbox(){
   const el=document.getElementById("email-list");
-  el.innerHTML="Loading...";
+  el.innerHTML='<div class="text-center py-20 text-zinc-500">Loading...</div>';
   try{
     const res=await fetch(`${WORKER_URL}/inbox`);
     allEmails=await res.json();
     renderEmails(allEmails);
   }catch{
-    el.innerHTML="Error";
+    el.innerHTML='<div class="text-center py-20 text-red-400">Failed</div>';
   }
 }
 
@@ -137,11 +212,24 @@ function renderEmails(emails){
   let html="";
   emails.forEach(e=>{
     html+=`
-<div onclick="openEmail(${e.id})" class="email-row p-3 border-b border-[#1f232b] cursor-pointer">
-${sanitizeHTML(e.from_email)} - ${sanitizeHTML(e.subject||'No subject')}
+<div onclick="openEmail(${e.id})"
+class="email-row bg-[#111318] border border-[#1f232b] p-4 rounded-lg cursor-pointer">
+
+<div class="flex justify-between">
+<div class="text-red-400">${sanitizeHTML(e.from_email)}</div>
+<div class="text-xs text-zinc-500">${e.received_at}</div>
+</div>
+
+<div class="font-medium mt-1">${sanitizeHTML(e.subject||'(No Subject)')}</div>
+
+<div class="text-sm text-zinc-500 mt-2">
+${sanitizeHTML(cleanEmailBody(e.body).slice(0,120))}
+</div>
+
 </div>`;
   });
-  el.innerHTML=html;
+
+  el.innerHTML=html||'<div class="text-center py-20 text-zinc-500">No emails</div>';
 }
 
 function filterEmails(){
@@ -160,10 +248,11 @@ function openEmail(id){
 
   document.getElementById("viewer").classList.remove("hidden");
 
-  document.getElementById("viewer-subject").textContent=currentEmail.subject;
+  document.getElementById("viewer-subject").textContent=currentEmail.subject||"(No Subject)";
   document.getElementById("viewer-from").textContent=currentEmail.from_email;
   document.getElementById("viewer-time").textContent=currentEmail.received_at;
-  document.getElementById("viewer-body").innerHTML=sanitizeHTML(cleanEmailBody(currentEmail.body));
+  document.getElementById("viewer-body").innerHTML=
+    sanitizeHTML(cleanEmailBody(currentEmail.body)).replace(/\n/g,'<br>');
 }
 
 function closeViewer(){
@@ -174,7 +263,7 @@ function closeViewer(){
 async function sendReply(){
   if(!currentEmail) return;
   const msg=document.getElementById("reply-text").value.trim();
-  if(!msg) return;
+  if(!msg) return alert("Write a reply");
 
   await fetch(`${WORKER_URL}/send`,{
     method:"POST",
@@ -201,7 +290,7 @@ async function sendCompose(){
   const subject=document.getElementById("compose-subject").value.trim();
   const body=document.getElementById("compose-body").value.trim();
 
-  if(!to||!subject||!body) return alert("Fill all");
+  if(!to||!subject||!body) return alert("Fill all fields");
 
   await fetch(`${WORKER_URL}/send`,{
     method:"POST",
