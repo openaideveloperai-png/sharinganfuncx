@@ -3,92 +3,206 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>SHARINGAN MAIL • Abuse@sharinganfuncx.fun</title>
+  <title>SMAIL - Sharingan Mail</title>
   <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
   <style>
     @import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap');
     body { font-family: 'Press Start 2P', system-ui; }
-    .scanline { position: relative; }
-    .scanline::after {
-      content: '';
-      position: absolute;
-      top: 0; left: 0; right: 0; bottom: 0;
-      background: repeating-linear-gradient(transparent 0px, transparent 4px, rgba(255,0,0,0.08) 4px, rgba(255,0,0,0.08) 8px);
-      pointer-events: none;
-      animation: scan 4s linear infinite;
+    .email-row:hover { background-color: #1f1f1f; }
+    .modal { animation: modalPop 0.3s ease-out; }
+    @keyframes modalPop {
+      from { opacity: 0; transform: scale(0.95); }
+      to { opacity: 1; transform: scale(1); }
     }
-    @keyframes scan { 0% { background-position: 0 0; } 100% { background-position: 0 100%; } }
   </style>
 </head>
-<body class="bg-black text-white min-h-screen p-6 scanline">
-  <div class="max-w-6xl mx-auto">
-    <div class="flex items-center gap-4 mb-8">
-      <div class="text-6xl">🔴</div>
-      <div>
-        <h1 class="text-5xl text-red-500 tracking-widest">SHARINGAN FUNCX MAIL</h1>
-        <p class="text-red-400 text-sm">Abuse@sharinganfuncx.fun — Real-time Webmail</p>
+<body class="bg-zinc-950 text-white min-h-screen">
+  <div class="flex h-screen">
+
+    <!-- Sidebar -->
+    <div class="w-72 bg-black border-r border-red-900 flex flex-col">
+      <div class="p-6 border-b border-red-900">
+        <div class="flex items-center gap-3">
+          <div class="text-4xl">🔴</div>
+          <div>
+            <h1 class="text-3xl font-bold text-red-500 tracking-widest">SMAIL</h1>
+            <p class="text-xs text-red-400">Sharingan Mail</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="p-4">
+        <button onclick="showComposeModal()" 
+                class="w-full bg-red-600 hover:bg-red-700 py-4 rounded-2xl font-bold text-lg flex items-center justify-center gap-2">
+          <i class="fas fa-pen"></i> COMPOSE
+        </button>
+      </div>
+
+      <div class="px-4">
+        <div onclick="loadInbox()" class="flex items-center gap-3 px-6 py-4 hover:bg-zinc-900 rounded-2xl cursor-pointer text-red-400">
+          <i class="fas fa-inbox"></i>
+          <span class="font-bold">Inbox</span>
+        </div>
+      </div>
+
+      <div class="mt-auto p-6 text-xs text-zinc-500 border-t border-red-900">
+        Abuse@sharinganfuncx.fun<br>
+        Powered by Cloudflare + Resend
       </div>
     </div>
 
-    <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
-      <!-- Inbox -->
-      <div class="bg-zinc-950 border border-red-600 rounded-3xl p-6">
-        <div class="flex justify-between items-center mb-6">
-          <h2 class="text-red-400 text-2xl">📥 INBOX</h2>
-          <button onclick="loadInbox()" class="bg-red-600 hover:bg-red-700 px-6 py-2 text-xs rounded-full">REFRESH</button>
-        </div>
-        <div id="inbox" class="space-y-4 min-h-[500px]"></div>
+    <!-- Main Content -->
+    <div class="flex-1 flex flex-col">
+      <!-- Top Bar -->
+      <div class="h-14 border-b border-red-900 flex items-center px-8 justify-between bg-zinc-950">
+        <h2 class="text-xl font-bold text-red-400">INBOX</h2>
+        <button onclick="loadInbox()" class="text-red-400 hover:text-white flex items-center gap-2">
+          <i class="fas fa-sync"></i> Refresh
+        </button>
       </div>
 
-      <!-- Compose -->
-      <div class="bg-zinc-950 border border-red-600 rounded-3xl p-8">
-        <h2 class="text-red-400 text-2xl mb-6">✉️ COMPOSE MESSAGE</h2>
+      <!-- Email List -->
+      <div id="email-list" class="flex-1 overflow-auto p-4 space-y-1">
+        <!-- Emails populated by JS -->
+      </div>
+    </div>
+  </div>
+
+  <!-- Email View Modal -->
+  <div id="email-modal" class="hidden fixed inset-0 bg-black/80 flex items-center justify-center z-50">
+    <div class="modal bg-zinc-900 w-full max-w-3xl mx-4 rounded-3xl overflow-hidden border border-red-600">
+      <div class="p-6 border-b border-red-900 flex justify-between items-center">
+        <h3 id="modal-subject" class="text-xl font-bold"></h3>
+        <button onclick="closeModal()" class="text-3xl text-red-400 hover:text-white">×</button>
+      </div>
+      
+      <div class="p-6">
+        <div class="flex justify-between text-sm text-zinc-400 mb-6">
+          <div>
+            From: <span id="modal-from" class="text-red-400"></span>
+          </div>
+          <div id="modal-time" class="text-zinc-500"></div>
+        </div>
         
-        <input id="to" placeholder="recipient@gmail.com" 
-               class="w-full bg-black border border-red-600 p-4 rounded-2xl mb-4 text-white">
-        
-        <input id="subject" placeholder="Subject" 
-               class="w-full bg-black border border-red-600 p-4 rounded-2xl mb-4 text-white">
-        
-        <textarea id="body" rows="9" placeholder="Write your message here..." 
-                  class="w-full bg-black border border-red-600 p-4 rounded-3xl mb-6 text-white resize-none"></textarea>
-        
-        <button onclick="sendEmail()" 
-                class="w-full bg-red-600 hover:bg-red-700 py-5 rounded-2xl font-bold text-lg tracking-widest">
-          SEND FROM ABUSE@SHARINGANFUNCX.FUN
+        <div id="modal-body" class="prose prose-invert max-w-none text-zinc-200 leading-relaxed text-base"></div>
+      </div>
+
+      <div class="p-6 border-t border-red-900 flex gap-4">
+        <button onclick="replyToEmail()" 
+                class="flex-1 bg-red-600 hover:bg-red-700 py-4 rounded-2xl font-bold flex items-center justify-center gap-2">
+          <i class="fas fa-reply"></i> REPLY
         </button>
+        <button onclick="closeModal()" 
+                class="flex-1 border border-red-600 hover:bg-zinc-800 py-4 rounded-2xl font-bold">
+          CLOSE
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Compose Modal -->
+  <div id="compose-modal" class="hidden fixed inset-0 bg-black/80 flex items-center justify-center z-50">
+    <div class="modal bg-zinc-900 w-full max-w-2xl mx-4 rounded-3xl p-8">
+      <h2 class="text-2xl text-red-400 mb-6">New Message</h2>
+      
+      <input id="compose-to" placeholder="To: email@gmail.com" 
+             class="w-full bg-zinc-950 border border-red-600 p-4 rounded-2xl mb-4">
+      
+      <input id="compose-subject" placeholder="Subject" 
+             class="w-full bg-zinc-950 border border-red-600 p-4 rounded-2xl mb-4">
+      
+      <textarea id="compose-body" rows="10" placeholder="Write your message..." 
+                class="w-full bg-zinc-950 border border-red-600 p-4 rounded-3xl mb-6"></textarea>
+      
+      <div class="flex gap-4">
+        <button onclick="closeComposeModal()" 
+                class="flex-1 py-4 border border-red-600 hover:bg-zinc-800 rounded-2xl">Cancel</button>
+        <button onclick="sendComposeEmail()" 
+                class="flex-1 bg-red-600 hover:bg-red-700 py-4 rounded-2xl font-bold">Send</button>
       </div>
     </div>
   </div>
 
   <script>
     const WORKER_URL = "https://sharingan-mail-worker.openaideveloperai.workers.dev";
+    let currentReplyTo = "";
 
     async function loadInbox() {
+      const container = document.getElementById("email-list");
+      container.innerHTML = `<div class="text-center text-zinc-400 py-12">Loading emails...</div>`;
+
       try {
         const res = await fetch(`${WORKER_URL}/inbox`);
         const emails = await res.json();
-        
-        let html = emails.map(e => `
-          <div class="bg-zinc-900 border-l-4 border-red-600 p-5 rounded-2xl">
-            <div class="text-red-400 text-sm">${e.from_email}</div>
-            <div class="font-bold text-base mt-1">${e.subject || '(no subject)'}</div>
-            <div class="text-sm text-zinc-300 mt-3">${(e.body || '').substring(0, 160)}...</div>
-            <div class="text-xs text-zinc-500 mt-4">${e.received_at}</div>
-          </div>
-        `).join('');
 
-        document.getElementById("inbox").innerHTML = html || 
-          `<p class='text-zinc-400 p-12 text-center'>No emails yet.<br>Send one to Abuse@sharinganfuncx.fun</p>`;
-      } catch(e) {
-        document.getElementById("inbox").innerHTML = "<p class='text-red-400 p-8'>Failed to load inbox</p>";
+        let html = "";
+        emails.forEach(email => {
+          html += `
+            <div onclick="openEmail(${email.id})" class="email-row bg-zinc-900 border border-zinc-800 p-5 rounded-2xl cursor-pointer hover:border-red-600 transition-all">
+              <div class="flex justify-between">
+                <div class="font-bold text-red-400">${email.from_email}</div>
+                <div class="text-xs text-zinc-500">${email.received_at}</div>
+              </div>
+              <div class="font-bold mt-1">${email.subject || '(no subject)'}</div>
+              <div class="text-sm text-zinc-400 mt-2 line-clamp-2">${(email.body || '').substring(0, 120)}...</div>
+            </div>`;
+        });
+
+        container.innerHTML = html || `<div class="text-center text-zinc-400 py-20">Your inbox is empty.<br>Send something to Abuse@sharinganfuncx.fun</div>`;
+      } catch (e) {
+        container.innerHTML = `<div class="text-red-400 text-center py-20">Failed to load inbox</div>`;
       }
     }
 
-    async function sendEmail() {
-      const to = document.getElementById("to").value.trim();
-      const subject = document.getElementById("subject").value.trim();
-      const body = document.getElementById("body").value.trim();
+    async function openEmail(id) {
+      try {
+        const res = await fetch(`${WORKER_URL}/inbox`);
+        const emails = await res.json();
+        const email = emails.find(e => e.id === id);
+        if (!email) return;
+
+        currentReplyTo = email.from_email;
+
+        document.getElementById("modal-subject").textContent = email.subject || "(no subject)";
+        document.getElementById("modal-from").textContent = email.from_email;
+        document.getElementById("modal-time").textContent = email.received_at;
+        document.getElementById("modal-body").innerHTML = `<p>${(email.body || '').replace(/\n/g, '<br>')}</p>`;
+
+        document.getElementById("email-modal").classList.remove("hidden");
+        document.getElementById("email-modal").classList.add("flex");
+      } catch (e) {
+        alert("Could not open email");
+      }
+    }
+
+    function closeModal() {
+      document.getElementById("email-modal").classList.add("hidden");
+      document.getElementById("email-modal").classList.remove("flex");
+    }
+
+    function replyToEmail() {
+      closeModal();
+      showComposeModal(currentReplyTo);
+    }
+
+    function showComposeModal(to = "") {
+      document.getElementById("compose-to").value = to;
+      document.getElementById("compose-subject").value = "";
+      document.getElementById("compose-body").value = "";
+      document.getElementById("compose-modal").classList.remove("hidden");
+      document.getElementById("compose-modal").classList.add("flex");
+    }
+
+    function closeComposeModal() {
+      document.getElementById("compose-modal").classList.add("hidden");
+      document.getElementById("compose-modal").classList.remove("flex");
+    }
+
+    async function sendComposeEmail() {
+      const to = document.getElementById("compose-to").value.trim();
+      const subject = document.getElementById("compose-subject").value.trim();
+      const body = document.getElementById("compose-body").value.trim();
 
       if (!to || !subject || !body) {
         alert("Please fill all fields");
@@ -103,18 +217,18 @@
         });
 
         if (res.ok) {
-          alert("✅ Email sent successfully from Abuse@sharinganfuncx.fun");
-          document.getElementById("body").value = "";
-          loadInbox(); // refresh inbox
+          alert("✅ Email sent successfully!");
+          closeComposeModal();
+          loadInbox();
         } else {
-          alert("Failed to send. Check console for details.");
+          alert("Failed to send email");
         }
-      } catch(e) {
-        alert("Error sending email. Make sure Resend API key is set correctly.");
+      } catch (e) {
+        alert("Error sending email");
       }
     }
 
-    // Auto refresh
+    // Auto refresh every 5 seconds
     setInterval(loadInbox, 5000);
     window.onload = loadInbox;
   </script>
