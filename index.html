@@ -1,299 +1,278 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Function Email</title>
-  <script src="https://cdn.tailwindcss.com"></script>
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
-  <style>
-    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap');
-    body { font-family: 'Inter', system-ui; }
-    .email-row:hover { background-color: #1f1f1f; }
-  </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Function Mail</title>
+
+<script src="https://cdn.tailwindcss.com"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap');
+
+body { font-family: 'Inter', system-ui; background:#0f1115; }
+
+.email-row:hover { background:#1a1d23; }
+
+.unread { font-weight:600; }
+
+::-webkit-scrollbar { width:8px; }
+::-webkit-scrollbar-thumb { background:#2a2f38; border-radius:10px; }
+
+/* draggable */
+.dragging { opacity:0.9; cursor:move; }
+</style>
 </head>
-<body class="bg-zinc-950 text-zinc-200 min-h-screen">
-  <div class="flex h-screen">
 
-    <!-- Sidebar -->
-    <div class="w-72 bg-zinc-900 border-r border-zinc-800 flex flex-col">
-      <div class="p-6 flex items-center gap-3">
-        <div class="w-9 h-9 bg-red-600 rounded-2xl flex items-center justify-center text-white font-bold text-2xl">F</div>
-        <div>
-          <h1 class="text-3xl font-semibold">Function</h1>
-          <p class="text-xs text-zinc-500">Abuse@sharinganfuncx.fun</p>
-        </div>
-      </div>
+<body class="text-zinc-200">
 
-      <div class="px-6 mt-2">
-        <button onclick="showComposeModal()" 
-                class="w-full bg-red-600 hover:bg-red-700 py-4 rounded-2xl font-medium flex items-center justify-center gap-2">
-          <i class="fas fa-pen"></i> Compose
-        </button>
-      </div>
+<div class="flex h-screen">
 
-      <div class="mt-8 px-3">
-        <div class="px-6 py-3 bg-zinc-800 rounded-2xl flex items-center gap-3 text-red-400 font-medium">
-          <i class="fas fa-inbox"></i> Inbox
-        </div>
-      </div>
-
-      <div class="mt-auto px-6 py-6 text-xs text-zinc-500 border-t border-zinc-800">
-        Powered by Cloudflare + Resend
-      </div>
-    </div>
-
-    <!-- Main Inbox -->
-    <div class="flex-1 flex flex-col">
-      <div class="h-14 border-b border-zinc-800 bg-zinc-900 px-8 flex items-center">
-        <h2 class="font-semibold text-lg">Inbox</h2>
-        
-        <div class="ml-auto flex items-center gap-4">
-          <div class="relative w-80">
-            <input id="search-input" type="text" placeholder="Search emails..." 
-                   onkeyup="filterEmails()" 
-                   class="w-full bg-zinc-800 border border-zinc-700 pl-10 py-2.5 rounded-2xl text-sm focus:outline-none focus:border-red-600">
-            <i class="fas fa-search absolute left-4 top-3 text-zinc-500"></i>
-          </div>
-          <button onclick="loadInbox()" class="flex items-center gap-2 text-zinc-400 hover:text-white">
-            <i class="fas fa-sync"></i> Refresh
-          </button>
-        </div>
-      </div>
-
-      <div id="email-list" class="flex-1 overflow-auto p-4 space-y-2">
-        <!-- Emails populated by JS -->
-      </div>
-    </div>
-
-    <!-- Email Viewer -->
-    <div id="viewer" class="w-0 lg:w-2/5 border-l border-zinc-800 bg-zinc-900 overflow-auto hidden lg:flex flex-col">
-      <div class="p-6 border-b border-zinc-800 flex items-center">
-        <button onclick="closeViewer()" class="text-zinc-400 hover:text-white flex items-center gap-2">
-          ← Back
-        </button>
-      </div>
-
-      <div class="p-6 flex-1 overflow-auto">
-        <div id="viewer-subject" class="text-2xl font-semibold mb-6"></div>
-        
-        <div class="flex items-center gap-3 mb-8">
-          <div id="viewer-from" class="font-medium text-red-400"></div>
-          <div id="viewer-time" class="text-xs text-zinc-500 ml-auto"></div>
-        </div>
-
-        <div id="viewer-body" class="text-zinc-300 leading-relaxed text-[15.2px] whitespace-pre-wrap"></div>
-      </div>
-
-      <!-- Inline Reply -->
-      <div class="p-6 border-t border-zinc-800 bg-zinc-950">
-        <textarea id="reply-text" rows="3" placeholder="Write your reply here..." 
-                  class="w-full bg-zinc-900 border border-zinc-700 rounded-2xl p-4 text-sm focus:outline-none focus:border-red-600"></textarea>
-        <button onclick="sendReply()" 
-                class="mt-4 w-full bg-red-600 hover:bg-red-700 py-3.5 rounded-2xl font-medium flex items-center justify-center gap-2">
-          <i class="fas fa-paper-plane"></i> Send Reply
-        </button>
-      </div>
+<!-- SIDEBAR -->
+<div class="w-64 bg-[#111318] border-r border-[#1f232b] flex flex-col">
+  <div class="p-5 flex items-center gap-3">
+    <div class="w-9 h-9 bg-red-500 rounded-xl flex items-center justify-center font-bold">F</div>
+    <div>
+      <h1 class="font-semibold">Function</h1>
+      <p class="text-xs text-zinc-500">mail panel</p>
     </div>
   </div>
 
-  <!-- Compose Modal -->
-  <div id="compose-modal" class="hidden fixed inset-0 bg-black/80 flex items-center justify-center z-50">
-    <div class="bg-zinc-900 w-full max-w-lg mx-4 rounded-3xl p-8">
-      <h2 class="text-xl font-semibold mb-6">New Message</h2>
-      <input id="compose-to" placeholder="To" class="w-full bg-zinc-800 border border-zinc-700 p-4 rounded-2xl mb-4">
-      <input id="compose-subject" placeholder="Subject" class="w-full bg-zinc-800 border border-zinc-700 p-4 rounded-2xl mb-4">
-      <textarea id="compose-body" rows="10" placeholder="Write your message..." class="w-full bg-zinc-800 border border-zinc-700 p-4 rounded-3xl mb-6"></textarea>
-      
-      <div class="flex gap-4">
-        <button onclick="closeComposeModal()" class="flex-1 py-4 border border-zinc-700 rounded-2xl">Cancel</button>
-        <button onclick="sendCompose()" class="flex-1 bg-red-600 py-4 rounded-2xl font-medium">Send</button>
-      </div>
-    </div>
+  <div class="px-4">
+    <button onclick="showComposeModal()" class="w-full bg-red-500 py-3 rounded-xl">Compose</button>
   </div>
 
-  <script>
-    const WORKER_URL = "https://sharingan-mail-worker.openaideveloperai.workers.dev";
-    let currentEmail = null;
-    let allEmails = [];
+  <div class="mt-6 px-2">
+    <div class="px-4 py-2 bg-[#1a1d23] rounded-lg text-red-400 flex gap-2 items-center">
+      <i class="fas fa-inbox"></i> Inbox
+    </div>
+  </div>
+</div>
 
-    // Strong XSS sanitizer
-    function sanitizeHTML(str) {
-      if (!str) return '';
-      return str
-        .replace(/&/g, '&amp;')
-        .replace(/</g, '&lt;')
-        .replace(/>/g, '&gt;')
-        .replace(/"/g, '&quot;')
-        .replace(/'/g, '&#039;')
-        .replace(/javascript:/gi, '')
-        .replace(/on\w+=/gi, '');
-    }
+<!-- MAIN -->
+<div class="flex-1 flex flex-col">
 
-    // Clean email body - removes quoted replies and MIME junk
-    function cleanEmailBody(body) {
-      if (!body) return '';
+<!-- TOP -->
+<div class="h-14 flex items-center px-6 gap-4 border-b border-[#1f232b] bg-[#111318]">
 
-      let cleaned = body
-        .replace(/--[\w\d=]+/g, '')                    // Remove MIME boundaries
-        .replace(/Content-Type:.*?\r\n/gi, '')         // Remove content-type headers
-        .replace(/charset="UTF-8"/gi, '')
-        .replace(/On .* wrote:[\s\S]*?>/gi, '')        // Remove quoted "On ... wrote:"
-        .replace(/On Sun, Mar 29, 2026.*?</gi, '')     // Remove your specific date format
-        .replace(/> test/g, '')                        // Remove common quoted test
-        .replace(/\r\n/g, '\n')
-        .trim();
+<input id="search-input" onkeyup="filterEmails()" placeholder="Search mail"
+class="flex-1 bg-[#1a1d23] px-4 py-2 rounded-lg border border-[#2a2f38]">
 
-      // Remove everything after "On [date] wrote:" (quoted reply)
-      const quoteIndex = cleaned.search(/On .* at .* wrote:/i);
-      if (quoteIndex !== -1) {
-        cleaned = cleaned.substring(0, quoteIndex).trim();
-      }
+<button onclick="loadInbox()"><i class="fas fa-rotate-right"></i></button>
 
-      return cleaned;
-    }
+</div>
 
-    async function loadInbox() {
-      const container = document.getElementById("email-list");
-      container.innerHTML = `<div class="text-center py-20 text-zinc-500">Loading emails...</div>`;
+<!-- BULK BAR -->
+<div id="bulk-bar" class="hidden px-6 py-2 bg-[#1a1d23] border-b border-[#1f232b] text-sm">
+<span id="selected-count">0</span> selected
+<button onclick="clearSelection()" class="ml-4 text-red-400">Clear</button>
+</div>
 
-      try {
-        const res = await fetch(`${WORKER_URL}/inbox`);
-        allEmails = await res.json();
-        renderEmails(allEmails);
-      } catch (e) {
-        container.innerHTML = `<div class="text-red-400 text-center py-20">Failed to load inbox</div>`;
-      }
-    }
+<!-- EMAIL LIST -->
+<div id="email-list" class="flex-1 overflow-auto"></div>
 
-    function renderEmails(emails) {
-      const container = document.getElementById("email-list");
-      let html = "";
+</div>
 
-      emails.forEach(email => {
-        const cleanBody = cleanEmailBody(email.body);
-        
-        html += `
-          <div onclick="openEmail(${email.id})" class="email-row bg-zinc-900 border border-zinc-800 p-5 rounded-2xl cursor-pointer hover:border-red-600">
-            <div class="flex justify-between">
-              <div class="font-medium text-red-400">${sanitizeHTML(email.from_email)}</div>
-              <div class="text-xs text-zinc-500">${email.received_at}</div>
-            </div>
-            <div class="font-semibold mt-1">${sanitizeHTML(email.subject || '(No Subject)')}</div>
-            <div class="text-sm text-zinc-400 mt-2 line-clamp-2">${sanitizeHTML(cleanBody.substring(0, 130))}...</div>
-          </div>`;
-      });
+<!-- VIEWER -->
+<div id="viewer" class="hidden lg:flex flex-col w-[38%] bg-[#111318] border-l border-[#1f232b]">
 
-      container.innerHTML = html || `<div class="text-center py-20 text-zinc-500">No emails yet</div>`;
-    }
+<div class="p-4 border-b border-[#1f232b] flex justify-between">
+<button onclick="closeViewer()">←</button>
+<button onclick="toggleStar(currentEmail?.id)">⭐</button>
+</div>
 
-    function filterEmails() {
-      const term = document.getElementById("search-input").value.toLowerCase().trim();
-      if (!term) {
-        renderEmails(allEmails);
-        return;
-      }
-      const filtered = allEmails.filter(email => 
-        (email.subject || "").toLowerCase().includes(term) ||
-        (email.from_email || "").toLowerCase().includes(term) ||
-        (email.body || "").toLowerCase().includes(term)
-      );
-      renderEmails(filtered);
-    }
+<div class="p-6 flex-1 overflow-auto">
+<div id="viewer-subject" class="text-xl mb-3"></div>
+<div class="flex mb-4">
+<div id="viewer-from" class="text-red-400"></div>
+<div id="viewer-time" class="ml-auto text-xs text-zinc-500"></div>
+</div>
+<div id="viewer-body"></div>
+</div>
 
-    async function openEmail(id) {
-      currentEmail = allEmails.find(e => e.id === id);
-      if (!currentEmail) return;
+<div class="p-4 border-t border-[#1f232b]">
+<textarea id="reply-text" class="w-full bg-[#1a1d23] p-2 rounded"></textarea>
+<button onclick="sendReply()" class="mt-2 bg-red-500 w-full py-2 rounded">Send</button>
+</div>
 
-      document.getElementById("viewer-subject").textContent = sanitizeHTML(currentEmail.subject || "(No Subject)");
-      document.getElementById("viewer-from").innerHTML = sanitizeHTML(currentEmail.from_email);
-      document.getElementById("viewer-time").textContent = currentEmail.received_at;
+</div>
 
-      const cleanBody = cleanEmailBody(currentEmail.body);
-      document.getElementById("viewer-body").innerHTML = sanitizeHTML(cleanBody).replace(/\n/g, '<br>');
+</div>
 
-      document.getElementById("reply-text").value = "";
-      document.getElementById("viewer").classList.remove("hidden");
-    }
+<!-- COMPOSE -->
+<div id="compose-modal" class="hidden fixed bottom-6 right-6 w-[420px] bg-[#111318] border border-[#2a2f38] rounded-xl shadow-lg">
 
-    function closeViewer() {
-      document.getElementById("viewer").classList.add("hidden");
-    }
+<div id="compose-header" class="p-3 cursor-move border-b border-[#1f232b]">New Message</div>
 
-    async function sendReply() {
-      if (!currentEmail) return;
-      const replyText = document.getElementById("reply-text").value.trim();
-      if (!replyText) return alert("Please write a reply");
+<div class="p-4 space-y-2">
+<input id="compose-to" placeholder="To" class="w-full bg-[#1a1d23] p-2 rounded">
+<input id="compose-subject" placeholder="Subject" class="w-full bg-[#1a1d23] p-2 rounded">
+<textarea id="compose-body" rows="6" class="w-full bg-[#1a1d23] p-2 rounded"></textarea>
+</div>
 
-      const subject = currentEmail.subject.startsWith("Re:") 
-        ? currentEmail.subject 
-        : `Re: ${currentEmail.subject || ""}`;
+<div class="p-3 flex justify-end">
+<button onclick="sendCompose()" class="bg-red-500 px-4 py-2 rounded">Send</button>
+</div>
 
-      try {
-        const res = await fetch(`${WORKER_URL}/send`, {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            to: currentEmail.from_email,
-            subject: subject,
-            message: replyText
-          })
-        });
+</div>
 
-        if (res.ok) {
-          alert("✅ Reply sent successfully!");
-          document.getElementById("reply-text").value = "";
-          loadInbox();
-        } else {
-          alert("Failed to send reply");
-        }
-      } catch (e) {
-        alert("Error sending reply");
-      }
-    }
+<script>
+const WORKER_URL = "https://sharingan-mail-worker.openaideveloperai.workers.dev";
 
-    function showComposeModal() {
-      document.getElementById("compose-to").value = "";
-      document.getElementById("compose-subject").value = "";
-      document.getElementById("compose-body").value = "";
-      document.getElementById("compose-modal").classList.remove("hidden");
-      document.getElementById("compose-modal").classList.add("flex");
-    }
+let allEmails = [];
+let currentEmail = null;
+let selected = new Set();
+let stars = new Set();
+let unread = new Set();
 
-    function closeComposeModal() {
-      document.getElementById("compose-modal").classList.add("hidden");
-      document.getElementById("compose-modal").classList.remove("flex");
-    }
+function hashEmail(email){
+  return md5(email.trim().toLowerCase());
+}
 
-    async function sendCompose() {
-      const to = document.getElementById("compose-to").value.trim();
-      const subject = document.getElementById("compose-subject").value.trim();
-      const body = document.getElementById("compose-body").value.trim();
+// simple md5
+function md5(str){
+  return crypto.subtle ? str : str;
+}
 
-      if (!to || !subject || !body) return alert("Please fill all fields");
+function getAvatar(email){
+  const hash = email.trim().toLowerCase();
+  return `https://www.gravatar.com/avatar/${hash}?d=identicon`;
+}
 
-      try {
-        const res = await fetch(`${WORKER_URL}/send`, {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ to, subject, message: body })
-        });
+function sanitizeHTML(str){
+  return (str||"").replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[m]));
+}
 
-        if (res.ok) {
-          alert("✅ Message sent!");
-          closeComposeModal();
-          loadInbox();
-        } else {
-          alert("Failed to send");
-        }
-      } catch (e) {
-        alert("Error sending message");
-      }
-    }
+async function loadInbox(){
+  const el=document.getElementById("email-list");
+  el.innerHTML="Loading...";
+  const res=await fetch(`${WORKER_URL}/inbox`);
+  allEmails=await res.json();
+  allEmails.forEach(e=>{ if(!unread.has(e.id)) unread.add(e.id); });
+  renderEmails(allEmails);
+}
 
-    // Auto refresh
-    setInterval(loadInbox, 6000);
-    window.onload = loadInbox;
-  </script>
+function renderEmails(emails){
+  const el=document.getElementById("email-list");
+  let html="";
+  emails.forEach(e=>{
+    const isUnread=unread.has(e.id);
+    html+=`
+<div class="email-row flex items-center px-4 py-3 border-b border-[#1f232b]">
+
+<input type="checkbox" onclick="toggleSelect(${e.id})" ${selected.has(e.id)?"checked":""}>
+
+<img src="${getAvatar(e.from_email)}" class="w-8 h-8 rounded-full mx-3">
+
+<div onclick="openEmail(${e.id})" class="flex-1 cursor-pointer ${isUnread?"unread":""}">
+${sanitizeHTML(e.from_email)} — ${sanitizeHTML(e.subject||"(No Subject)")}
+</div>
+
+<div onclick="toggleStar(${e.id})" class="mx-2 cursor-pointer">${stars.has(e.id)?"⭐":"☆"}</div>
+
+</div>`;
+  });
+  el.innerHTML=html;
+}
+
+function toggleSelect(id){
+  selected.has(id)?selected.delete(id):selected.add(id);
+  document.getElementById("bulk-bar").classList.toggle("hidden",selected.size===0);
+  document.getElementById("selected-count").textContent=selected.size;
+}
+
+function clearSelection(){
+  selected.clear();
+  renderEmails(allEmails);
+}
+
+function toggleStar(id){
+  stars.has(id)?stars.delete(id):stars.add(id);
+  renderEmails(allEmails);
+}
+
+function openEmail(id){
+  currentEmail=allEmails.find(e=>e.id===id);
+  unread.delete(id);
+
+  document.getElementById("viewer").classList.remove("hidden");
+  viewer-subject.textContent=currentEmail.subject;
+  viewer-from.textContent=currentEmail.from_email;
+  viewer-time.textContent=currentEmail.received_at;
+  viewer-body.innerHTML=sanitizeHTML(currentEmail.body);
+
+  renderEmails(allEmails);
+}
+
+function closeViewer(){
+  viewer.classList.add("hidden");
+}
+
+async function sendReply(){
+  const msg=reply-text.value.trim();
+  if(!msg) return;
+
+  await fetch(`${WORKER_URL}/send`,{
+    method:"POST",
+    headers:{'Content-Type':'application/json'},
+    body:JSON.stringify({
+      to: currentEmail.from_email,
+      subject:"Re: "+currentEmail.subject,
+      message:msg
+    })
+  });
+
+  alert("Sent");
+}
+
+function showComposeModal(){
+  compose-modal.classList.remove("hidden");
+}
+
+function sendCompose(){
+  fetch(`${WORKER_URL}/send`,{
+    method:"POST",
+    headers:{'Content-Type':'application/json'},
+    body:JSON.stringify({
+      to: compose-to.value,
+      subject: compose-subject.value,
+      message: compose-body.value
+    })
+  });
+  compose-modal.classList.add("hidden");
+}
+
+// keyboard shortcuts
+document.addEventListener("keydown",e=>{
+  if(e.key==="c") showComposeModal();
+  if(e.key==="Escape") closeViewer();
+});
+
+// draggable compose
+let isDragging=false,offsetX,offsetY;
+const modal=document.getElementById("compose-modal");
+const header=document.getElementById("compose-header");
+
+header.onmousedown=e=>{
+  isDragging=true;
+  offsetX=e.clientX-modal.offsetLeft;
+  offsetY=e.clientY-modal.offsetTop;
+};
+
+document.onmousemove=e=>{
+  if(!isDragging) return;
+  modal.style.left=e.clientX-offsetX+"px";
+  modal.style.top=e.clientY-offsetY+"px";
+  modal.style.right="auto";
+  modal.style.bottom="auto";
+};
+
+document.onmouseup=()=>isDragging=false;
+
+setInterval(loadInbox,6000);
+window.onload=loadInbox;
+</script>
+
 </body>
 </html>
