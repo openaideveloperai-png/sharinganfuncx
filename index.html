@@ -8,40 +8,60 @@
   <style>
     @import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap');
     body { font-family: 'Press Start 2P', system-ui; }
+    .scanline { position: relative; }
+    .scanline::after {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: repeating-linear-gradient(transparent 0px, transparent 4px, rgba(255,0,0,0.08) 4px, rgba(255,0,0,0.08) 8px);
+      pointer-events: none;
+      animation: scan 4s linear infinite;
+    }
+    @keyframes scan { 0% { background-position: 0 0; } 100% { background-position: 0 100%; } }
   </style>
 </head>
-<body class="bg-black text-white min-h-screen p-8">
+<body class="bg-black text-white min-h-screen p-6 scanline">
   <div class="max-w-6xl mx-auto">
-    <h1 class="text-5xl text-red-500 mb-2 flex items-center gap-4">
-      🔴 SHARINGAN FUNCX MAIL
-    </h1>
-    <p class="text-red-400 mb-8">Abuse@sharinganfuncx.fun — Real-time Inbox</p>
+    <div class="flex items-center gap-4 mb-8">
+      <div class="text-6xl">🔴</div>
+      <div>
+        <h1 class="text-5xl text-red-500 tracking-widest">SHARINGAN FUNCX MAIL</h1>
+        <p class="text-red-400 text-sm">Abuse@sharinganfuncx.fun — Real-time Webmail</p>
+      </div>
+    </div>
 
     <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
       <!-- Inbox -->
-      <div>
-        <div class="flex justify-between mb-4">
+      <div class="bg-zinc-950 border border-red-600 rounded-3xl p-6">
+        <div class="flex justify-between items-center mb-6">
           <h2 class="text-red-400 text-2xl">📥 INBOX</h2>
-          <button onclick="loadInbox()" 
-                  class="bg-zinc-800 hover:bg-red-600 px-6 py-2 text-sm rounded">REFRESH</button>
+          <button onclick="loadInbox()" class="bg-red-600 hover:bg-red-700 px-6 py-2 text-xs rounded-full">REFRESH</button>
         </div>
-        <div id="inbox" class="space-y-4"></div>
+        <div id="inbox" class="space-y-4 min-h-[500px]"></div>
       </div>
 
       <!-- Compose -->
-      <div class="bg-zinc-900 p-8 rounded-3xl">
-        <h2 class="text-red-400 text-2xl mb-6">✉️ COMPOSE</h2>
-        <input id="to" placeholder="recipient@gmail.com" class="w-full p-4 bg-black border border-red-600 rounded-2xl mb-4">
-        <input id="subject" placeholder="Subject" class="w-full p-4 bg-black border border-red-600 rounded-2xl mb-4">
-        <textarea id="body" rows="8" placeholder="Write your message here..." class="w-full p-4 bg-black border border-red-600 rounded-3xl mb-6"></textarea>
+      <div class="bg-zinc-950 border border-red-600 rounded-3xl p-8">
+        <h2 class="text-red-400 text-2xl mb-6">✉️ COMPOSE MESSAGE</h2>
+        
+        <input id="to" placeholder="recipient@gmail.com" 
+               class="w-full bg-black border border-red-600 p-4 rounded-2xl mb-4 text-white">
+        
+        <input id="subject" placeholder="Subject" 
+               class="w-full bg-black border border-red-600 p-4 rounded-2xl mb-4 text-white">
+        
+        <textarea id="body" rows="9" placeholder="Write your message here..." 
+                  class="w-full bg-black border border-red-600 p-4 rounded-3xl mb-6 text-white resize-none"></textarea>
+        
         <button onclick="sendEmail()" 
-                class="w-full bg-red-600 hover:bg-red-700 py-5 rounded-2xl font-bold text-lg">SEND FROM ABUSE@SHARINGANFUNCX.FUN</button>
+                class="w-full bg-red-600 hover:bg-red-700 py-5 rounded-2xl font-bold text-lg tracking-widest">
+          SEND FROM ABUSE@SHARINGANFUNCX.FUN
+        </button>
       </div>
     </div>
   </div>
 
   <script>
-    // CHANGE THIS LINE ↓↓↓
     const WORKER_URL = "https://sharingan-mail-worker.openaideveloperai.workers.dev";
 
     async function loadInbox() {
@@ -50,10 +70,10 @@
         const emails = await res.json();
         
         let html = emails.map(e => `
-          <div class="bg-zinc-900 border border-red-600 p-6 rounded-3xl">
+          <div class="bg-zinc-900 border-l-4 border-red-600 p-5 rounded-2xl">
             <div class="text-red-400 text-sm">${e.from_email}</div>
-            <div class="font-bold text-lg mt-1">${e.subject || '(no subject)'}</div>
-            <div class="text-sm text-zinc-300 mt-3 line-clamp-3">${(e.body || '').substring(0, 180)}...</div>
+            <div class="font-bold text-base mt-1">${e.subject || '(no subject)'}</div>
+            <div class="text-sm text-zinc-300 mt-3">${(e.body || '').substring(0, 160)}...</div>
             <div class="text-xs text-zinc-500 mt-4">${e.received_at}</div>
           </div>
         `).join('');
@@ -61,7 +81,7 @@
         document.getElementById("inbox").innerHTML = html || 
           `<p class='text-zinc-400 p-12 text-center'>No emails yet.<br>Send one to Abuse@sharinganfuncx.fun</p>`;
       } catch(e) {
-        document.getElementById("inbox").innerHTML = "<p class='text-red-400 p-8'>Error loading inbox</p>";
+        document.getElementById("inbox").innerHTML = "<p class='text-red-400 p-8'>Failed to load inbox</p>";
       }
     }
 
@@ -75,18 +95,27 @@
         return;
       }
 
-      await fetch(`${WORKER_URL}/send`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ to, subject, message: body })
-      });
+      try {
+        const res = await fetch(`${WORKER_URL}/send`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ to, subject, message: body })
+        });
 
-      alert("✅ Email sent successfully from Abuse@sharinganfuncx.fun");
-      document.getElementById("body").value = "";
+        if (res.ok) {
+          alert("✅ Email sent successfully from Abuse@sharinganfuncx.fun");
+          document.getElementById("body").value = "";
+          loadInbox(); // refresh inbox
+        } else {
+          alert("Failed to send. Check console for details.");
+        }
+      } catch(e) {
+        alert("Error sending email. Make sure Resend API key is set correctly.");
+      }
     }
 
-    // Auto refresh every 4 seconds
-    setInterval(loadInbox, 4000);
+    // Auto refresh
+    setInterval(loadInbox, 5000);
     window.onload = loadInbox;
   </script>
 </body>
