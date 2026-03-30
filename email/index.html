@@ -27,8 +27,7 @@
       </div>
 
       <div class="px-6 mt-2">
-        <button onclick="showComposeModal()" 
-                class="w-full bg-red-600 hover:bg-red-700 py-4 rounded-2xl font-medium flex items-center justify-center gap-2">
+        <button onclick="showComposeModal()" class="w-full bg-red-600 hover:bg-red-700 py-4 rounded-2xl font-medium flex items-center justify-center gap-2">
           <i class="fas fa-pen"></i> Compose
         </button>
       </div>
@@ -50,8 +49,7 @@
         <h2 class="font-semibold text-lg">Inbox</h2>
         <div class="ml-auto flex items-center gap-4">
           <div class="relative w-80">
-            <input id="search-input" type="text" placeholder="Search emails..." 
-                   onkeyup="filterEmails()" 
+            <input id="search-input" type="text" placeholder="Search emails..." onkeyup="filterEmails()" 
                    class="w-full bg-zinc-800 border border-zinc-700 pl-10 py-2.5 rounded-2xl text-sm focus:outline-none focus:border-red-600">
             <i class="fas fa-search absolute left-4 top-3 text-zinc-500"></i>
           </div>
@@ -76,28 +74,12 @@
           <div id="viewer-from" class="font-medium text-red-400"></div>
           <div id="viewer-time" class="text-xs text-zinc-500 ml-auto"></div>
         </div>
-        <div id="viewer-body" class="text-zinc-300 whitespace-pre-wrap leading-relaxed mb-8"></div>
-
-        <!-- Received Attachments -->
-        <div id="viewer-attachments" class="mb-8"></div>
+        <div id="viewer-body" class="text-zinc-300 whitespace-pre-wrap leading-relaxed"></div>
       </div>
 
-      <!-- Inline Reply with Attachment Support -->
       <div class="p-6 border-t border-zinc-800 bg-zinc-950">
-        <textarea id="reply-text" rows="3" placeholder="Write your reply here..." 
-                  class="w-full bg-zinc-900 border border-zinc-700 rounded-2xl p-4 text-sm"></textarea>
-        
-        <div class="mt-4 flex items-center gap-3">
-          <input type="file" id="reply-file-input" multiple class="hidden">
-          <button onclick="document.getElementById('reply-file-input').click()" 
-                  class="flex items-center gap-2 bg-zinc-800 hover:bg-zinc-700 px-5 py-2 rounded-2xl text-sm">
-            <i class="fas fa-paperclip"></i> Attach
-          </button>
-          <div id="reply-selected-files" class="flex-1 flex flex-wrap gap-2"></div>
-        </div>
-
-        <button onclick="sendReply()" 
-                class="mt-4 w-full bg-red-600 hover:bg-red-700 py-3.5 rounded-2xl font-medium flex items-center justify-center gap-2">
+        <textarea id="reply-text" rows="3" placeholder="Write your reply here..." class="w-full bg-zinc-900 border border-zinc-700 rounded-2xl p-4 text-sm"></textarea>
+        <button onclick="sendReply()" class="mt-4 w-full bg-red-600 hover:bg-red-700 py-3.5 rounded-2xl font-medium flex items-center justify-center gap-2">
           <i class="fas fa-paper-plane"></i> Send Reply
         </button>
       </div>
@@ -115,8 +97,7 @@
       <div class="mb-6">
         <label class="block text-sm text-zinc-400 mb-2">Attachments</label>
         <input type="file" id="compose-file-input" multiple class="hidden">
-        <button onclick="document.getElementById('compose-file-input').click()" 
-                class="flex items-center gap-2 bg-zinc-800 hover:bg-zinc-700 px-6 py-3 rounded-2xl text-sm">
+        <button onclick="document.getElementById('compose-file-input').click()" class="flex items-center gap-2 bg-zinc-800 hover:bg-zinc-700 px-6 py-3 rounded-2xl text-sm">
           <i class="fas fa-paperclip"></i> Attach files
         </button>
         <div id="compose-selected-files" class="mt-3 flex flex-wrap gap-2"></div>
@@ -133,14 +114,32 @@
     const WORKER_URL = "https://sharingan-mail-worker.openaideveloperai.workers.dev";
     let currentEmail = null;
     let allEmails = [];
-    let replyFiles = [];
 
     function sanitizeHTML(str) {
       return (str || "").replace(/[&<>"']/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[m]));
     }
 
+    // VERY STRONG cleaner for Gmail/Resend quoted replies
     function cleanEmailBody(body) {
-      return (body || "").replace(/--[\w\d=]+/g, '').replace(/Content-Type:.*?\r\n/gi, '').trim();
+      if (!body) return "";
+
+      let text = body
+        .replace(/--[\w\d=]+/g, '')                    // MIME boundaries
+        .replace(/Content-Type:.*?\r\n/gi, '')         // headers
+        .replace(/Content-Transfer-Encoding:.*?\r\n/gi, '')
+        .replace(/On .* at .* wrote:[\s\S]*?/gi, '')   // quoted "On date wrote"
+        .replace(/On Sun, Mar 29, 2026.*?>/gi, '')     // your specific date
+        .replace(/On Mon, Mar 30, 2026.*?>/gi, '')
+        .replace(/> test/g, '')
+        .replace(/=E2=80=AF/g, ' ')                    // quoted-printable fix
+        .replace(/\r\n/g, '\n')
+        .trim();
+
+      // Remove everything after the first quoted block
+      const quoteIndex = text.search(/On .* wrote:/i);
+      if (quoteIndex !== -1) text = text.substring(0, quoteIndex).trim();
+
+      return text;
     }
 
     function renderEmails(emails) {
@@ -197,12 +196,11 @@
       document.getElementById("viewer-subject").textContent = currentEmail.subject || "(No Subject)";
       document.getElementById("viewer-from").textContent = currentEmail.from_email;
       document.getElementById("viewer-time").textContent = currentEmail.received_at;
-      document.getElementById("viewer-body").innerHTML = sanitizeHTML(cleanEmailBody(currentEmail.body)).replace(/\n/g, '<br>');
 
-      // Clear previous reply attachments
-      replyFiles = [];
-      document.getElementById("reply-selected-files").innerHTML = "";
+      const cleanBody = cleanEmailBody(currentEmail.body);
+      document.getElementById("viewer-body").innerHTML = sanitizeHTML(cleanBody).replace(/\n/g, '<br>');
 
+      document.getElementById("reply-text").value = "";
       document.getElementById("viewer").classList.remove("hidden");
     }
 
@@ -210,20 +208,12 @@
       document.getElementById("viewer").classList.add("hidden");
     }
 
-    // ==================== REPLY WITH ATTACHMENTS ====================
     async function sendReply() {
       if (!currentEmail) return;
       const msg = document.getElementById("reply-text").value.trim();
+      if (!msg) return alert("Write something");
 
-      const attachments = [];
-      for (let file of replyFiles) {
-        const base64 = await new Promise(resolve => {
-          const reader = new FileReader();
-          reader.onload = () => resolve(reader.result.split(',')[1]);
-          reader.readAsDataURL(file);
-        });
-        attachments.push({ filename: file.name, content: base64, type: file.type });
-      }
+      const subject = currentEmail.subject.startsWith("Re:") ? currentEmail.subject : `Re: ${currentEmail.subject || ""}`;
 
       try {
         const res = await fetch(`${WORKER_URL}/send`, {
@@ -231,45 +221,30 @@
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
             to: currentEmail.from_email,
-            subject: currentEmail.subject.startsWith("Re:") ? currentEmail.subject : `Re: ${currentEmail.subject || ""}`,
-            message: msg || " ",
-            attachments: attachments
+            subject: subject,
+            message: msg
           })
         });
 
         if (res.ok) {
-          alert("✅ Reply sent with attachments!");
+          alert("✅ Reply sent!");
           document.getElementById("reply-text").value = "";
-          replyFiles = [];
-          document.getElementById("reply-selected-files").innerHTML = "";
           loadInbox();
-        } else {
-          alert("Failed to send reply");
         }
-      } catch (e) {
-        alert("Error sending reply");
-      }
+      } catch (e) {}
     }
 
-    // ==================== COMPOSE WITH ATTACHMENTS ====================
     function showComposeModal() {
-      selectedFiles = [];
       document.getElementById("compose-to").value = "";
       document.getElementById("compose-subject").value = "";
       document.getElementById("compose-body").value = "";
-      document.getElementById("compose-selected-files").innerHTML = "";
       document.getElementById("compose-modal").classList.remove("hidden");
       document.getElementById("compose-modal").classList.add("flex");
+    }
 
-      document.getElementById("compose-file-input").onchange = function(e) {
-        Array.from(e.target.files).forEach(file => {
-          selectedFiles.push(file);
-          const div = document.createElement("div");
-          div.className = "bg-zinc-800 text-xs px-3 py-1 rounded-xl flex items-center gap-2";
-          div.innerHTML = `<i class="fas fa-paperclip"></i> ${file.name}`;
-          document.getElementById("compose-selected-files").appendChild(div);
-        });
-      };
+    function closeComposeModal() {
+      document.getElementById("compose-modal").classList.add("hidden");
+      document.getElementById("compose-modal").classList.remove("flex");
     }
 
     async function sendCompose() {
@@ -279,41 +254,23 @@
 
       if (!to || !subject || !body) return alert("Please fill all fields");
 
-      const attachments = [];
-      for (let file of selectedFiles) {
-        const base64 = await new Promise(resolve => {
-          const reader = new FileReader();
-          reader.onload = () => resolve(reader.result.split(',')[1]);
-          reader.readAsDataURL(file);
-        });
-        attachments.push({ filename: file.name, content: base64, type: file.type });
-      }
-
       try {
         const res = await fetch(`${WORKER_URL}/send`, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ to, subject, message: body, attachments })
+          body: JSON.stringify({ to, subject, message: body })
         });
 
         if (res.ok) {
-          alert("✅ Message sent with attachments!");
+          alert("✅ Message sent!");
           closeComposeModal();
           loadInbox();
-        } else {
-          alert("Failed to send");
         }
       } catch (e) {
         alert("Error sending message");
       }
     }
 
-    function closeComposeModal() {
-      document.getElementById("compose-modal").classList.add("hidden");
-      document.getElementById("compose-modal").classList.remove("flex");
-    }
-
-    // Auto refresh
     setInterval(loadInbox, 7000);
     window.onload = loadInbox;
   </script>
