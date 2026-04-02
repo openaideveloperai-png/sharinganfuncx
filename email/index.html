@@ -1,278 +1,382 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Function Email</title>
-  <script src="https://cdn.tailwindcss.com"></script>
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
-  <style>
-    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap');
-    body { font-family: 'Inter', system-ui; }
-    .email-row:hover { background-color: #1f1f1f; }
-  </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Function Email</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap');
+  body { font-family: 'Inter', system-ui, sans-serif; }
+  
+  ::-webkit-scrollbar { width: 6px; height: 6px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb { background: #3f3f46; border-radius: 4px; }
+  ::-webkit-scrollbar-thumb:hover { background: #52525b; }
+
+  textarea { resize: none; overflow: hidden; min-height: 2.5rem; }
+  
+  #viewer-body a { color: #f87171; text-decoration: underline; }
+  #viewer-body ul, #viewer-body ol { margin-left: 1.5rem; padding-bottom: 1rem; }
+  #viewer-body p { margin-bottom: 0.75rem; }
+</style>
 </head>
-<body class="bg-zinc-950 text-zinc-200 min-h-screen">
 
-  <div class="flex h-screen">
+<body class="bg-black text-zinc-300 h-screen w-screen overflow-hidden flex">
 
-    <!-- Sidebar -->
-    <div class="w-72 bg-zinc-900 border-r border-zinc-800 flex flex-col">
-      <div class="p-6 flex items-center gap-3">
-        <div class="w-9 h-9 bg-red-600 rounded-2xl flex items-center justify-center text-white font-bold text-2xl">F</div>
-        <div>
-          <h1 class="text-3xl font-semibold">Function</h1>
-          <p class="text-xs text-zinc-500">Abuse@sharinganfuncx.fun</p>
-        </div>
+<nav class="hidden md:flex w-64 bg-zinc-950 border-r border-zinc-800 flex-col flex-shrink-0 z-20">
+  <div class="h-20 flex items-center px-6 gap-3 border-b border-zinc-800/50">
+    <div class="w-8 h-8 bg-red-600 rounded-lg flex items-center justify-center text-white font-bold text-xl shadow-md">F</div>
+    <div class="truncate">
+      <h1 class="text-lg font-semibold text-zinc-100">Function</h1>
+      <p class="text-[10px] text-zinc-500 uppercase tracking-wider truncate">Abuse@sharinganfuncx.fun</p>
+    </div>
+  </div>
+
+  <div class="p-4">
+    <button onclick="showComposeModal()" class="w-full bg-red-600 hover:bg-red-500 text-white transition-colors py-2.5 rounded-lg font-medium text-sm flex items-center justify-center gap-2 shadow-sm">
+      <i class="fas fa-pen text-xs"></i> Compose
+    </button>
+  </div>
+
+  <div class="mt-auto p-4 text-[11px] text-zinc-600 text-center">
+    Powered by Cloudflare + Resend
+  </div>
+</nav>
+
+<main id="inbox-pane" class="flex-1 flex flex-col min-w-0 bg-black z-10">
+  <header class="h-16 border-b border-zinc-800 flex items-center justify-between px-4 md:px-6 shrink-0 bg-black/90 backdrop-blur-md">
+    <div class="flex items-center gap-3">
+      <h2 class="font-semibold text-lg text-zinc-100">Inbox</h2>
+    </div>
+    
+    <button id="refresh-btn" onclick="loadInbox()" class="text-sm text-zinc-400 hover:text-zinc-100 transition-colors flex items-center gap-2 px-3 py-1.5 rounded-md hover:bg-zinc-900" aria-label="Refresh Inbox">
+      <i id="refresh-icon" class="fas fa-sync"></i> <span class="hidden sm:inline">Refresh</span>
+    </button>
+  </header>
+
+  <div id="email-list" class="flex-1 overflow-y-auto p-3 space-y-1.5"></div>
+</main>
+
+<div id="resizer" class="hidden lg:block w-1.5 bg-zinc-900 hover:bg-zinc-600 active:bg-zinc-500 cursor-col-resize transition-colors z-40 shrink-0 border-l border-zinc-800"></div>
+
+<section id="viewer-pane" class="hidden lg:flex w-full lg:w-[55%] xl:w-[60%] flex-col border-l border-zinc-800 bg-zinc-950 absolute lg:static inset-0 z-30 flex-shrink-0">
+  
+  <div class="h-16 px-4 border-b border-zinc-800 flex items-center shrink-0 bg-zinc-950/90 backdrop-blur-md">
+    <button onclick="closeViewer()" class="text-zinc-400 hover:text-zinc-100 transition-colors flex items-center text-sm px-2 py-1 -ml-2 rounded hover:bg-zinc-900" aria-label="Close Viewer">
+      <i class="fas fa-chevron-left mr-2 text-xs"></i> Back
+    </button>
+  </div>
+
+  <div class="flex-1 overflow-y-auto p-6 lg:p-8">
+    <h2 id="viewer-subject" class="text-2xl font-semibold text-zinc-100 mb-2 leading-tight"></h2>
+    <div class="flex items-center gap-3 mb-8 pb-6 border-b border-zinc-800/50">
+      <div class="w-10 h-10 rounded-full bg-zinc-800 flex items-center justify-center text-zinc-400">
+        <i class="fas fa-user"></i>
       </div>
-
-      <div class="px-6 mt-2">
-        <button onclick="showComposeModal()" class="w-full bg-red-600 hover:bg-red-700 py-4 rounded-2xl font-medium flex items-center justify-center gap-2">
-          <i class="fas fa-pen"></i> Compose
-        </button>
-      </div>
-
-      <div class="mt-8 px-3">
-        <div class="px-6 py-3 bg-zinc-800 rounded-2xl flex items-center gap-3 text-red-400 font-medium">
-          <i class="fas fa-inbox"></i> Inbox
-        </div>
-      </div>
-
-      <div class="mt-auto px-6 py-6 text-xs text-zinc-500 border-t border-zinc-800">
-        Powered by Cloudflare + Resend
+      <div>
+        <div id="viewer-from" class="text-sm font-medium text-zinc-200"></div>
+        <div class="text-xs text-zinc-500">to me</div>
       </div>
     </div>
+    <div id="viewer-body" class="text-zinc-300 text-sm leading-relaxed max-w-none"></div>
+  </div>
 
-    <!-- Main Inbox -->
-    <div class="flex-1 flex flex-col">
-      <div class="h-14 border-b border-zinc-800 bg-zinc-900 px-8 flex items-center">
-        <h2 class="font-semibold text-lg">Inbox</h2>
-        <div class="ml-auto flex items-center gap-4">
-          <div class="relative w-80">
-            <input id="search-input" type="text" placeholder="Search emails..." onkeyup="filterEmails()" 
-                   class="w-full bg-zinc-800 border border-zinc-700 pl-10 py-2.5 rounded-2xl text-sm focus:outline-none focus:border-red-600">
-            <i class="fas fa-search absolute left-4 top-3 text-zinc-500"></i>
-          </div>
-          <button onclick="loadInbox()" class="flex items-center gap-2 text-zinc-400 hover:text-white">
-            <i class="fas fa-sync"></i> Refresh
-          </button>
-        </div>
-      </div>
-
-      <div id="email-list" class="flex-1 overflow-auto p-4 space-y-2"></div>
-    </div>
-
-    <!-- Email Viewer -->
-    <div id="viewer" class="w-0 lg:w-2/5 border-l border-zinc-800 bg-zinc-900 overflow-auto hidden lg:flex flex-col">
-      <div class="p-6 border-b border-zinc-800 flex items-center">
-        <button onclick="closeViewer()" class="text-zinc-400 hover:text-white flex items-center gap-2">← Back</button>
-      </div>
-
-      <div class="p-6 flex-1 overflow-auto">
-        <div id="viewer-subject" class="text-2xl font-semibold mb-6"></div>
-        <div class="flex items-center gap-3 mb-8">
-          <div id="viewer-from" class="font-medium text-red-400"></div>
-          <div id="viewer-time" class="text-xs text-zinc-500 ml-auto"></div>
-        </div>
-        <div id="viewer-body" class="text-zinc-300 whitespace-pre-wrap leading-relaxed"></div>
-      </div>
-
-      <div class="p-6 border-t border-zinc-800 bg-zinc-950">
-        <textarea id="reply-text" rows="3" placeholder="Write your reply here..." class="w-full bg-zinc-900 border border-zinc-700 rounded-2xl p-4 text-sm"></textarea>
-        <button onclick="sendReply()" class="mt-4 w-full bg-red-600 hover:bg-red-700 py-3.5 rounded-2xl font-medium flex items-center justify-center gap-2">
-          <i class="fas fa-paper-plane"></i> Send Reply
+  <div class="p-4 border-t border-zinc-800 bg-zinc-900/50 shrink-0">
+    <div class="bg-black border border-zinc-800 rounded-lg focus-within:border-zinc-600 focus-within:ring-1 focus-within:ring-zinc-600 transition-all">
+      <label for="reply-text" class="sr-only">Reply Message</label>
+      <textarea id="reply-text" rows="1" placeholder="Reply to this email..." class="w-full bg-transparent p-3 outline-none text-sm text-zinc-200 placeholder-zinc-600" oninput="autoExpand(this)"></textarea>
+      
+      <div class="flex items-center justify-between p-2 border-t border-zinc-800/50">
+        <label for="reply-files" class="sr-only">Attach Files</label>
+        <input id="reply-files" type="file" multiple class="text-xs text-zinc-500 file:mr-3 file:py-1.5 file:px-3 file:rounded-md file:border-0 file:text-xs file:font-medium file:bg-zinc-800 file:text-zinc-300 hover:file:bg-zinc-700 file:cursor-pointer transition-colors cursor-pointer">
+        
+        <button id="reply-btn" onclick="sendReply()" class="bg-red-600 hover:bg-red-500 text-white text-sm font-medium px-4 py-1.5 rounded-md transition-colors">
+          Send
         </button>
       </div>
     </div>
   </div>
+</section>
 
-  <!-- Compose Modal -->
-  <div id="compose-modal" class="hidden fixed inset-0 bg-black/80 flex items-center justify-center z-50">
-    <div class="bg-zinc-900 w-full max-w-2xl mx-4 rounded-3xl p-8">
-      <h2 class="text-xl font-semibold mb-6">New Message</h2>
-      <input id="compose-to" placeholder="To" class="w-full bg-zinc-800 border border-zinc-700 p-4 rounded-2xl mb-4">
-      <input id="compose-subject" placeholder="Subject" class="w-full bg-zinc-800 border border-zinc-700 p-4 rounded-2xl mb-4">
-      <textarea id="compose-body" rows="8" placeholder="Write your message..." class="w-full bg-zinc-800 border border-zinc-700 p-4 rounded-3xl mb-6"></textarea>
+<div id="compose-modal" class="hidden fixed inset-0 z-50 bg-black/60 backdrop-blur-sm flex items-center justify-center p-4">
+  <div class="bg-zinc-950 border border-zinc-800 rounded-xl w-full max-w-lg shadow-2xl overflow-hidden flex flex-col max-h-full">
+    
+    <div class="px-5 py-4 border-b border-zinc-800 flex justify-between items-center bg-zinc-900/50">
+      <h3 class="text-sm font-medium text-zinc-100">New Message</h3>
+      <button onclick="closeComposeModal()" class="text-zinc-500 hover:text-zinc-200 transition-colors p-1" aria-label="Close Compose Modal">
+        <i class="fas fa-times"></i>
+      </button>
+    </div>
 
-      <div class="mb-6">
-        <label class="block text-sm text-zinc-400 mb-2">Attachments</label>
-        <input type="file" id="compose-file-input" multiple class="hidden">
-        <button onclick="document.getElementById('compose-file-input').click()" class="flex items-center gap-2 bg-zinc-800 hover:bg-zinc-700 px-6 py-3 rounded-2xl text-sm">
-          <i class="fas fa-paperclip"></i> Attach files
-        </button>
-        <div id="compose-selected-files" class="mt-3 flex flex-wrap gap-2"></div>
+    <div class="p-5 flex-1 overflow-y-auto space-y-4">
+      <div>
+        <label for="compose-to" class="sr-only">To</label>
+        <input id="compose-to" placeholder="To" class="w-full bg-black border border-zinc-800 focus:border-zinc-600 p-2.5 rounded-md outline-none text-sm text-zinc-200 placeholder-zinc-600 transition-colors">
       </div>
-
-      <div class="flex gap-4">
-        <button onclick="closeComposeModal()" class="flex-1 py-4 border border-zinc-700 rounded-2xl">Cancel</button>
-        <button onclick="sendCompose()" class="flex-1 bg-red-600 py-4 rounded-2xl font-medium">Send</button>
+      <div>
+        <label for="compose-subject" class="sr-only">Subject</label>
+        <input id="compose-subject" placeholder="Subject" class="w-full bg-black border border-zinc-800 focus:border-zinc-600 p-2.5 rounded-md outline-none text-sm text-zinc-200 placeholder-zinc-600 transition-colors">
+      </div>
+      <div>
+        <label for="compose-body" class="sr-only">Message Body</label>
+        <textarea id="compose-body" rows="6" placeholder="Write your message..." class="w-full bg-black border border-zinc-800 focus:border-zinc-600 p-2.5 rounded-md outline-none text-sm text-zinc-200 placeholder-zinc-600 transition-colors" oninput="autoExpand(this)"></textarea>
       </div>
     </div>
+
+    <div class="px-5 py-4 border-t border-zinc-800 bg-zinc-900/50 flex items-center justify-between">
+      <label for="compose-files" class="sr-only">Attach Files</label>
+      <input id="compose-files" type="file" multiple class="text-xs text-zinc-500 file:mr-3 file:py-1.5 file:px-3 file:rounded-md file:border-0 file:text-xs file:font-medium file:bg-zinc-800 file:text-zinc-300 hover:file:bg-zinc-700 file:cursor-pointer transition-colors cursor-pointer max-w-[60%]">
+
+      <button id="compose-btn" onclick="sendCompose()" class="bg-red-600 hover:bg-red-500 text-white text-sm font-medium px-5 py-2 rounded-md transition-colors min-w-[80px]">
+        Send
+      </button>
+    </div>
+
   </div>
+</div>
 
-  <script>
-    const WORKER_URL = "https://sharingan-mail-worker.openaideveloperai.workers.dev";
-    let currentEmail = null;
-    let allEmails = [];
+<script>
+const WORKER_URL = "https://sharingan-mail-worker.openaideveloperai.workers.dev";
 
-    function sanitizeHTML(str) {
-      return (str || "").replace(/[&<>"']/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[m]));
-    }
+let allEmails = [];
+let currentEmail = null;
 
-    // VERY STRONG cleaner for Gmail/Resend quoted replies
-    function cleanEmailBody(body) {
-      if (!body) return "";
+function autoExpand(field) {
+  field.style.height = 'inherit';
+  field.style.height = (field.scrollHeight) + 'px';
+}
 
-      let text = body
-        .replace(/--[\w\d=]+/g, '')                    // MIME boundaries
-        .replace(/Content-Type:.*?\r\n/gi, '')         // headers
-        .replace(/Content-Transfer-Encoding:.*?\r\n/gi, '')
-        .replace(/On .* at .* wrote:[\s\S]*?/gi, '')   // quoted "On date wrote"
-        .replace(/On Sun, Mar 29, 2026.*?>/gi, '')     // your specific date
-        .replace(/On Mon, Mar 30, 2026.*?>/gi, '')
-        .replace(/> test/g, '')
-        .replace(/=E2=80=AF/g, ' ')                    // quoted-printable fix
-        .replace(/\r\n/g, '\n')
-        .trim();
+function sanitizeHTML(html) {
+  const doc = new DOMParser().parseFromString(html, 'text/html');
+  const badTags = doc.querySelectorAll('script, iframe, object, embed, form');
+  badTags.forEach(el => el.remove());
+  return doc.body.innerHTML;
+}
 
-      // Remove everything after the first quoted block
-      const quoteIndex = text.search(/On .* wrote:/i);
-      if (quoteIndex !== -1) text = text.substring(0, quoteIndex).trim();
+function fileToBase64(file) {
+  return new Promise((resolve) => {
+    const reader = new FileReader();
+    reader.onload = () => resolve({ filename: file.name, content: reader.result.split(",")[1] });
+    reader.readAsDataURL(file);
+  });
+}
 
-      return text;
-    }
+function formatShortDate(dateStr) {
+  const date = new Date(dateStr);
+  const now = new Date();
+  if (date.toDateString() === now.toDateString()) return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+  return date.toLocaleDateString([], { month: 'short', day: 'numeric' });
+}
 
-    function renderEmails(emails) {
-      const container = document.getElementById("email-list");
-      container.innerHTML = "";
+function renderEmails(emails) {
+  const container = document.getElementById("email-list");
+  container.innerHTML = "";
 
-      emails.forEach(email => {
-        const cleanBody = cleanEmailBody(email.body);
-        const div = document.createElement("div");
-        div.className = "email-row bg-zinc-900 border border-zinc-800 p-5 rounded-2xl cursor-pointer hover:border-red-600";
-        div.innerHTML = `
-          <div class="flex justify-between">
-            <div class="font-medium text-red-400">${sanitizeHTML(email.from_email)}</div>
-            <div class="text-xs text-zinc-500">${email.received_at}</div>
-          </div>
-          <div class="font-semibold mt-1">${sanitizeHTML(email.subject || '(No Subject)')}</div>
-          <div class="text-sm text-zinc-400 mt-2">${sanitizeHTML(cleanBody.substring(0, 130))}...</div>
-        `;
-        div.onclick = () => openEmail(email.id);
-        container.appendChild(div);
-      });
+  if (emails.length === 0) {
+    container.innerHTML = `<div class="text-center text-zinc-600 p-8 text-sm">No emails found.</div>`;
+    return;
+  }
 
-      if (emails.length === 0) {
-        container.innerHTML = `<div class="text-center py-20 text-zinc-500">No emails yet</div>`;
-      }
-    }
+  emails.forEach(e => {
+    const tmp = document.createElement("DIV");
+    tmp.innerHTML = sanitizeHTML(e.body);
+    const preview = (tmp.textContent || tmp.innerText || "").substring(0, 90).replace(/\n/g, " ");
 
-    async function loadInbox() {
-      const container = document.getElementById("email-list");
-      container.innerHTML = `<div class="text-center py-20 text-zinc-500">Loading...</div>`;
-      try {
-        const res = await fetch(`${WORKER_URL}/inbox`);
-        allEmails = await res.json();
-        renderEmails(allEmails);
-      } catch (e) {
-        container.innerHTML = `<div class="text-red-400 text-center py-20">Failed to load inbox</div>`;
-      }
-    }
+    const div = document.createElement("div");
+    div.className = "group flex flex-col p-3 rounded-lg cursor-pointer hover:bg-zinc-900 border border-transparent hover:border-zinc-800 transition-all";
+    
+    div.innerHTML = `
+      <div class="flex justify-between items-baseline mb-1 gap-2">
+        <div class="text-sm font-medium text-zinc-200 truncate">${e.from_email}</div>
+        <div class="text-xs text-zinc-500 whitespace-nowrap">${formatShortDate(e.received_at)}</div>
+      </div>
+      <div class="text-sm font-medium text-zinc-300 truncate mb-0.5">${e.subject || "(no subject)"}</div>
+      <div class="text-xs text-zinc-500 truncate group-hover:text-zinc-400 transition-colors">${preview || "..."}</div>
+    `;
 
-    function filterEmails() {
-      const term = document.getElementById("search-input").value.toLowerCase().trim();
-      if (!term) return renderEmails(allEmails);
-      const filtered = allEmails.filter(e => 
-        (e.subject || "").toLowerCase().includes(term) ||
-        (e.from_email || "").toLowerCase().includes(term)
-      );
-      renderEmails(filtered);
-    }
+    div.onclick = () => openEmail(e.id);
+    container.appendChild(div);
+  });
+}
 
-    async function openEmail(id) {
-      currentEmail = allEmails.find(e => e.id === id);
-      if (!currentEmail) return;
+async function loadInbox() {
+  const icon = document.getElementById("refresh-icon");
+  icon.classList.add("animate-spin");
+  try {
+    const res = await fetch(`${WORKER_URL}/inbox`);
+    allEmails = await res.json();
+    renderEmails(allEmails);
+  } catch (err) {
+    document.getElementById("email-list").innerHTML = `<div class="text-center text-red-500 p-8 text-sm">Failed to connect to server.</div>`;
+  } finally {
+    icon.classList.remove("animate-spin");
+  }
+}
 
-      document.getElementById("viewer-subject").textContent = currentEmail.subject || "(No Subject)";
-      document.getElementById("viewer-from").textContent = currentEmail.from_email;
-      document.getElementById("viewer-time").textContent = currentEmail.received_at;
+function openEmail(id) {
+  currentEmail = allEmails.find(e => e.id === id);
+  const viewer = document.getElementById("viewer-pane");
+  const inbox = document.getElementById("inbox-pane");
+  
+  viewer.classList.remove("hidden");
+  if (window.innerWidth < 1024) inbox.classList.add("hidden");
 
-      const cleanBody = cleanEmailBody(currentEmail.body);
-      document.getElementById("viewer-body").innerHTML = sanitizeHTML(cleanBody).replace(/\n/g, '<br>');
+  document.getElementById("viewer-subject").textContent = currentEmail.subject || "(no subject)";
+  document.getElementById("viewer-from").textContent = currentEmail.from_email;
+  document.getElementById("viewer-body").innerHTML = sanitizeHTML(currentEmail.body);
 
-      document.getElementById("reply-text").value = "";
-      document.getElementById("viewer").classList.remove("hidden");
-    }
+  const replyBox = document.getElementById("reply-text");
+  replyBox.value = "";
+  replyBox.style.height = "inherit";
+}
 
-    function closeViewer() {
-      document.getElementById("viewer").classList.add("hidden");
-    }
+function closeViewer() {
+  document.getElementById("viewer-pane").classList.add("hidden");
+  document.getElementById("inbox-pane").classList.remove("hidden");
+  currentEmail = null;
+}
 
-    async function sendReply() {
-      if (!currentEmail) return;
-      const msg = document.getElementById("reply-text").value.trim();
-      if (!msg) return alert("Write something");
+window.addEventListener('resize', () => {
+  const viewer = document.getElementById("viewer-pane");
+  const inbox = document.getElementById("inbox-pane");
+  if (window.innerWidth >= 1024) {
+    inbox.classList.remove("hidden");
+  } else {
+    viewer.style.width = ''; 
+    if (!viewer.classList.contains("hidden")) inbox.classList.add("hidden");
+  }
+});
 
-      const subject = currentEmail.subject.startsWith("Re:") ? currentEmail.subject : `Re: ${currentEmail.subject || ""}`;
+async function processSend(btnId, payload, onSuccess) {
+  const btn = document.getElementById(btnId);
+  const originalText = btn.innerText;
+  
+  btn.innerText = "Sending...";
+  btn.disabled = true;
+  btn.classList.add("opacity-50", "cursor-not-allowed");
 
-      try {
-        const res = await fetch(`${WORKER_URL}/send`, {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            to: currentEmail.from_email,
-            subject: subject,
-            message: msg
-          })
-        });
+  try {
+    const res = await fetch(`${WORKER_URL}/send`, {
+      method: "POST", headers: {"Content-Type": "application/json"}, body: JSON.stringify(payload)
+    });
 
-        if (res.ok) {
-          alert("✅ Reply sent!");
-          document.getElementById("reply-text").value = "";
-          loadInbox();
-        }
-      } catch (e) {}
-    }
+    if (!res.ok) throw new Error("Failed");
+    
+    btn.innerText = "Sent!";
+    btn.classList.remove("bg-red-600", "hover:bg-red-500");
+    btn.classList.add("bg-green-600", "hover:bg-green-500");
+    if (onSuccess) onSuccess();
 
-    function showComposeModal() {
-      document.getElementById("compose-to").value = "";
-      document.getElementById("compose-subject").value = "";
-      document.getElementById("compose-body").value = "";
-      document.getElementById("compose-modal").classList.remove("hidden");
-      document.getElementById("compose-modal").classList.add("flex");
-    }
+  } catch (err) {
+    btn.innerText = "Error";
+    btn.classList.remove("bg-red-600", "hover:bg-red-500");
+    btn.classList.add("bg-red-900", "hover:bg-red-900");
+  } finally {
+    setTimeout(() => { 
+      btn.innerText = originalText; 
+      btn.disabled = false; 
+      btn.className = btnId === 'reply-btn' ? "bg-red-600 hover:bg-red-500 text-white text-sm font-medium px-4 py-1.5 rounded-md transition-colors" : "bg-red-600 hover:bg-red-500 text-white text-sm font-medium px-5 py-2 rounded-md transition-colors min-w-[80px]";
+    }, 2000);
+  }
+}
 
-    function closeComposeModal() {
-      document.getElementById("compose-modal").classList.add("hidden");
-      document.getElementById("compose-modal").classList.remove("flex");
-    }
+async function sendCompose() {
+  const to = document.getElementById("compose-to").value.trim();
+  const subject = document.getElementById("compose-subject").value.trim();
+  const message = document.getElementById("compose-body").value.trim();
+  const files = document.getElementById("compose-files").files;
 
-    async function sendCompose() {
-      const to = document.getElementById("compose-to").value.trim();
-      const subject = document.getElementById("compose-subject").value.trim();
-      const body = document.getElementById("compose-body").value.trim();
+  if (!to || !message) return;
 
-      if (!to || !subject || !body) return alert("Please fill all fields");
+  let attachments = [];
+  for (const f of files) attachments.push(await fileToBase64(f));
 
-      try {
-        const res = await fetch(`${WORKER_URL}/send`, {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ to, subject, message: body })
-        });
+  // Convert newlines to HTML breaks for proper rendering
+  const formattedMessage = message.replace(/\n/g, '<br>');
 
-        if (res.ok) {
-          alert("✅ Message sent!");
-          closeComposeModal();
-          loadInbox();
-        }
-      } catch (e) {
-        alert("Error sending message");
-      }
-    }
+  await processSend("compose-btn", { to, subject, message: formattedMessage, attachments }, () => {
+    document.getElementById("compose-to").value = "";
+    document.getElementById("compose-subject").value = "";
+    document.getElementById("compose-body").value = "";
+    document.getElementById("compose-body").style.height = "inherit";
+    document.getElementById("compose-files").value = "";
+    setTimeout(closeComposeModal, 500);
+    loadInbox();
+  });
+}
 
-    setInterval(loadInbox, 7000);
-    window.onload = loadInbox;
-  </script>
+async function sendReply() {
+  if (!currentEmail) return;
+
+  const msgInput = document.getElementById("reply-text");
+  const msg = msgInput.value.trim();
+  const filesInput = document.getElementById("reply-files");
+
+  if (!msg) return;
+
+  let attachments = [];
+  for (const f of filesInput.files) attachments.push(await fileToBase64(f));
+
+  // APPEND QUOTED THREAD HISTORY to outgoing message body
+  const historyHtml = `
+    <br><br>
+    <div style="border-left: 2px solid #3f3f46; padding-left: 1rem; margin-left: 0; color: #a1a1aa;">
+      <p style="margin-bottom: 0.5rem;">On ${new Date(currentEmail.received_at).toLocaleString()}, <b>${currentEmail.from_email}</b> wrote:</p>
+      <blockquote style="margin: 0;">${currentEmail.body}</blockquote>
+    </div>
+  `;
+  const formattedMessage = msg.replace(/\n/g, '<br>') + historyHtml;
+
+  const payload = {
+    to: currentEmail.from_email,
+    subject: currentEmail.subject.startsWith("Re:") ? currentEmail.subject : "Re: " + currentEmail.subject,
+    message: formattedMessage,
+    attachments,
+    reply_to_message_id: currentEmail.message_id 
+  };
+
+  await processSend("reply-btn", payload, () => {
+    msgInput.value = "";
+    msgInput.style.height = "inherit";
+    filesInput.value = "";
+    loadInbox(); // Reload inbox to fetch the sent message we just logged
+  });
+}
+
+function showComposeModal() { document.getElementById("compose-modal").classList.remove("hidden"); }
+function closeComposeModal() { document.getElementById("compose-modal").classList.add("hidden"); }
+
+const resizer = document.getElementById('resizer');
+const viewerPane = document.getElementById('viewer-pane');
+let isResizing = false;
+
+resizer.addEventListener('mousedown', (e) => {
+  isResizing = true;
+  document.body.style.cursor = 'col-resize';
+  document.body.style.userSelect = 'none';
+});
+
+window.addEventListener('mousemove', (e) => {
+  if (!isResizing) return;
+  let newWidth = window.innerWidth - e.clientX;
+  const minWidth = 350; 
+  const maxWidth = window.innerWidth - 256 - 250; 
+  if (newWidth < minWidth) newWidth = minWidth;
+  if (newWidth > maxWidth) newWidth = maxWidth;
+  viewerPane.style.width = newWidth + 'px';
+});
+
+window.addEventListener('mouseup', () => {
+  if (isResizing) {
+    isResizing = false;
+    document.body.style.cursor = '';
+    document.body.style.userSelect = '';
+  }
+});
+
+loadInbox();
+</script>
 </body>
 </html>
