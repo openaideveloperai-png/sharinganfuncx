@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>THE AURORA FILES • EXPOSED >:(</title>
+    <title>THE AURORA FILES • EXPOSED >:( (HE'S AN HE)</title>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Creepster&amp;display=swap');
         
@@ -26,7 +26,6 @@
             position: relative;
         }
         
-        /* Top secret header bar */
         .top-bar {
             background: #000;
             color: #ff0044;
@@ -168,7 +167,7 @@
         }
         
         .main-content {
-            max-width: 1100px;
+            max-width: 1200px;
             margin: 40px auto;
             padding: 0 40px;
         }
@@ -213,7 +212,6 @@
             box-shadow: 0 0 60px #ff00aa;
         }
         
-        /* PDF MODAL */
         .modal {
             display: none;
             position: fixed;
@@ -229,9 +227,9 @@
         
         .modal-content {
             background: #f8f1e3;
-            width: 90%;
-            max-width: 1000px;
-            max-height: 92vh;
+            width: 92%;
+            max-width: 1100px;
+            max-height: 94vh;
             overflow: hidden;
             box-shadow: 0 0 80px #ff0044;
             border: 16px solid #222;
@@ -256,24 +254,24 @@
         
         .pdf-body {
             padding: 50px 70px;
-            height: calc(92vh - 130px);
+            height: calc(94vh - 130px);
             overflow-y: auto;
             background: #f8f1e3;
             color: #111;
             font-family: 'Times New Roman', Times, serif;
             font-size: 1.15rem;
-            line-height: 1.8;
+            line-height: 1.85;
             position: relative;
         }
         
         .pdf-body::before {
-            content: "CONFIDENTIAL • LEAKED • AURORA FILES";
+            content: "CONFIDENTIAL • LEAKED • AURORA FILES • HE'S AN HE";
             position: absolute;
             top: 50%;
             left: 50%;
-            transform: translate(-50%, -50%) rotate(-35deg);
-            font-size: 4rem;
-            opacity: 0.08;
+            transform: translate(-50%, -50%) rotate(-38deg);
+            font-size: 4.2rem;
+            opacity: 0.07;
             color: #c00;
             pointer-events: none;
             white-space: nowrap;
@@ -283,10 +281,11 @@
         
         .pdf-page {
             background: white;
-            padding: 40px;
-            margin-bottom: 60px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+            padding: 45px;
+            margin-bottom: 70px;
+            box-shadow: 0 15px 40px rgba(0,0,0,0.3);
             position: relative;
+            min-height: 1100px;
         }
         
         .pdf-page:last-child {
@@ -296,9 +295,9 @@
         .pdf-page::after {
             content: attr(data-page);
             position: absolute;
-            bottom: 20px;
-            right: 40px;
-            font-size: 0.9rem;
+            bottom: 25px;
+            right: 45px;
+            font-size: 0.95rem;
             color: #888;
         }
         
@@ -336,20 +335,28 @@
             top: 30px;
             right: 40px;
             transform: rotate(18deg);
-            border: 6px solid #c00;
+            border: 8px solid #c00;
             color: #c00;
-            padding: 8px 30px;
-            font-size: 1.8rem;
+            padding: 10px 35px;
+            font-size: 2rem;
             font-weight: bold;
-            opacity: 0.9;
+            opacity: 0.95;
             pointer-events: none;
+        }
+        
+        .evidence {
+            background: #111;
+            padding: 25px;
+            border-left: 10px solid #ff0044;
+            margin: 25px 0;
+            box-shadow: 4px 4px 0 rgba(255,0,68,0.2);
         }
         
         footer {
             background: #000;
             color: #ff8899;
             text-align: center;
-            padding: 30px;
+            padding: 40px;
             font-size: 1rem;
             border-top: 3px solid #ff0044;
         }
@@ -363,13 +370,13 @@
             background: linear-gradient(
                 to bottom,
                 transparent 50%,
-                rgba(255, 0, 68, 0.07) 50%
+                rgba(255, 0, 68, 0.08) 50%
             );
-            background-size: 100% 6px;
+            background-size: 100% 8px;
             pointer-events: none;
             z-index: 99999;
-            animation: scan 4s linear infinite;
-            opacity: 0.15;
+            animation: scan 3.5s linear infinite;
+            opacity: 0.2;
         }
         
         @keyframes scan {
@@ -377,18 +384,27 @@
             100% { background-position: 0 100%; }
         }
         
-        .evidence {
-            background: #111;
-            padding: 20px;
-            border-left: 8px solid #ff0044;
-            margin: 25px 0;
+        .evil-bar {
+            background: #220011;
+            color: #ff8899;
+            text-align: center;
+            padding: 12px;
+            font-size: 1.3rem;
+            letter-spacing: 6px;
+            font-weight: bold;
+            border-bottom: 4px dashed #ff0044;
         }
     </style>
 </head>
 <body>
     <!-- TOP SECRET BAR -->
     <div class="top-bar">
-        ★★★ TOP SECRET • CLASSIFIED • DO NOT DISTRIBUTE • AURORA FILES LEAKED ★★★
+        ★★★ TOP SECRET • CLASSIFIED • HE'S AN HE • AURORA FILES LEAKED • DO NOT DISTRIBUTE ★★★
+    </div>
+
+    <!-- EVIL HEADER BAR -->
+    <div class="evil-bar">
+        MUAAHAHA • THE AURORA FILES JUST GOT 10× MORE EVIL • HE'S AN HE EDITION
     </div>
 
     <!-- HEADER -->
@@ -397,226 +413,283 @@
         <nav>
             <a href="#hero">HOME</a>
             <a href="#evidence">THE EVIDENCE</a>
-            <a href="#files" onclick="openPDF()">LEAKED DOCUMENTS</a>
+            <a href="#timeline">TIMELINE OF EVIL</a>
+            <a href="#files" onclick="openPDF()">LEAKED DOCUMENTS (18+ PAGES)</a>
             <a href="#reactions">WORLD REACTIONS</a>
-            <a href="#" onclick="glitchImage()">GLITCH THE PROFILE</a>
+            <a href="#" onclick="glitchImage()">GLITCH THE PROFILE &gt;:("</a>
         </nav>
         <div style="font-size:1.1rem; color:#ff0044; font-weight:bold; letter-spacing:3px;">
-            >:( EVIL EXPOSED
+            >:( HE'S AN HE • EVIL EXPOSED
         </div>
     </header>
 
     <!-- HERO -->
     <section id="hero" class="hero">
         <div class="hero-text">
-            <div class="badge">LEAKED • APRIL 2026</div>
-            <h1>THE AURORA FILES<br>EXPOSED</h1>
-            <p class="subtitle">She said “Microslop”… and so much worse.<br>Her evil plans finally revealed.</p>
-            <p style="font-size:1.4rem; max-width:520px;">
+            <div class="badge">LEAKED • APRIL 18, 2026 • HE'S AN HE</div>
+            <h1>THE AURORA FILES<br>EXPOSED<br>&gt;:(&nbsp;&nbsp;HE'S AN HE</h1>
+            <p class="subtitle">He called them “Microslop” 94 times.<br>He plotted world domination with memes.<br>He’s not just chaotic… he’s EVIL.</p>
+            <p style="font-size:1.4rem; max-width:580px;">
                 What started as cute streams turned into the biggest tech conspiracy of the decade.<br>
-                <strong>Internal memos. Private chats. Evil rants.</strong><br>
-                Aurora is NOT who you thought she was… &gt;:(
+                <strong>Internal memos. Private rants. 18+ pages of pure evil.</strong><br>
+                Aurora is NOT who you thought he was… and he’s an HE.
             </p>
             <button onclick="openPDF()" class="pdf-button">
-                OPEN THE FULL LEAKED PDF NOW
+                OPEN THE FULL 22-PAGE LEAKED PDF NOW &gt;:(
             </button>
             <p style="font-size:0.9rem; opacity:0.7; margin-top:20px;">
-                100% real-looking documents • 18 pages of pure chaos • Downloadable &amp; printable
+                100% believable evil documents • He wrote all of it • Downloadable &amp; printable • Pure harmless chaos
             </p>
         </div>
         
         <!-- Profile image -->
-        <img id="profile-image" src="image.png" alt="Aurora Profile - The Evil One" class="profile-pic" onclick="glitchImage()">
+        <img id="profile-image" src="image.png" alt="Aurora Profile - The Evil One (HE'S AN HE)" class="profile-pic" onclick="glitchImage()">
         
         <div style="position:absolute; bottom:40px; right:60px; background:#000; color:#ff0044; padding:10px 25px; font-size:1rem; transform:rotate(-12deg); box-shadow:4px 4px 0 #ff0044;">
-            OFFICIAL AURORA PROFILE PIC • PROPERTY OF EVIL HQ
+            OFFICIAL AURORA PROFILE PIC • PROPERTY OF EVIL HQ • HE'S AN HE
         </div>
     </section>
 
-    <!-- QUICK FACTS -->
+    <!-- QUICK FACTS / EVIDENCE -->
     <div class="main-content">
         <div class="section" id="evidence">
-            <h2>WHAT THE FILES PROVE</h2>
-            <div style="display:grid; grid-template-columns:repeat(auto-fit,minmax(300px,1fr)); gap:30px;">
+            <h2>WHAT THE FILES PROVE ABOUT HIM</h2>
+            <div style="display:grid; grid-template-columns:repeat(auto-fit,minmax(340px,1fr)); gap:30px;">
                 <div class="evidence">
-                    <strong>1. She calls Microsoft “Microslop” in 47 different emails</strong><br>
-                    Every single time. Sometimes she even adds “sloppy little Microslop” for extra spice.
+                    <strong>1. He calls Microsoft “Microslop” 94 times in one week</strong><br>
+                    He even made it his official sign-off: “Microslop must burn — Aurora (he/him)”
                 </div>
                 <div class="evidence">
-                    <strong>2. Secret plan to “take over the world with memes”</strong><br>
-                    Actual quote from page 9: “We don’t need tanks. We need viral cat videos and chaos.”
+                    <strong>2. Secret plan titled “Operation: Replace Windows with Aurora Chaos OS”</strong><br>
+                    He wrote 14 pages on how he will “make every computer scream my name at startup”
                 </div>
                 <div class="evidence">
-                    <strong>3. She hates Edge browser more than pineapple on pizza</strong><br>
-                    She wrote a 3-page essay titled “Why Edge is the final boss of bad taste.”
+                    <strong>3. He hates Edge more than anything. Wrote a 7-page essay on it.</strong><br>
+                    Title: “Edge is what happens when Microslop tries to be cool at 3 AM”
                 </div>
                 <div class="evidence">
-                    <strong>4. “Muahaha” appears 83 times in her private logs</strong><br>
-                    That’s more evil laughs than a James Bond villain marathon.
+                    <strong>4. “Muahaha” appears 127 times in his private logs</strong><br>
+                    He records himself laughing evilly every single night. It’s his hobby.
+                </div>
+                <div class="evidence">
+                    <strong>5. He wants to “take over the internet one perfectly timed roast at a time”</strong><br>
+                    Actual quote: “No tanks. Just memes. And maybe a little light psychological warfare.”
+                </div>
+                <div class="evidence">
+                    <strong>6. He has a hidden folder called “Microslop Tears Collection”</strong><br>
+                    Filled with screenshots of every time Microsoft messed up. He laughs at them daily.
                 </div>
             </div>
         </div>
 
-        <!-- THE LEAK TEASER -->
+        <!-- TIMELINE OF EVIL -->
+        <div class="section" id="timeline">
+            <h2>TIMELINE OF AURORA’S EVIL (HE’S AN HE)</h2>
+            <div style="display:flex; flex-direction:column; gap:15px;">
+                <div style="background:#111; padding:20px; border-left:8px solid #ff0044;">
+                    <strong>April 1, 2026</strong> — First public “Microslop” drop. He said it 12 times in one stream.
+                </div>
+                <div style="background:#111; padding:20px; border-left:8px solid #ff0044;">
+                    <strong>April 7, 2026</strong> — Wrote the 22-page manifesto at 4:18 AM. Called it “My Evil Thesis”.
+                </div>
+                <div style="background:#111; padding:20px; border-left:8px solid #ff0044;">
+                    <strong>April 12, 2026</strong> — Leaked internal email: “Microslop can choke on its own updates.”
+                </div>
+                <div style="background:#111; padding:20px; border-left:8px solid #ff0044;">
+                    <strong>April 15, 2026</strong> — Recorded 47 evil laughs in one voice memo titled “For the archives.”
+                </div>
+                <div style="background:#111; padding:20px; border-left:8px solid #ff0044;">
+                    <strong>April 18, 2026</strong> — TODAY — The files are leaked. The world will never be the same.
+                </div>
+            </div>
+        </div>
+
+        <!-- LEAK TEASER -->
         <div class="section" id="files">
-            <h2>EXCERPTS FROM THE AURORA FILES</h2>
+            <h2>EXCERPTS FROM THE 22-PAGE AURORA FILES (HE WROTE EVERY WORD)</h2>
             <p style="text-align:center; font-size:1.3rem; margin-bottom:30px; color:#ff8899;">
                 These are REAL screenshots from the leaked PDF you can download below ↓
             </p>
             
-            <div style="background:#222; padding:25px; margin:20px 0; border:2px dashed #ff0044;">
-                <p style="font-family:serif; font-size:1.1rem; color:#ddd;">
-                    <strong>Leaked Email — April 12, 2026</strong><br><br>
-                    Subject: Operation Microslop Must Burn<br>
+            <div style="background:#222; padding:30px; margin:20px 0; border:2px dashed #ff0044;">
+                <p style="font-family:serif; font-size:1.2rem; color:#ddd;">
+                    <strong>Leaked Memo — April 18, 2026</strong><br><br>
+                    Subject: Phase 47 of Microslop Destruction<br>
                     From: aurora@secretlair.com<br>
                     To: innercircle@secretlair.com<br><br>
-                    “Listen up, my little gremlins. Microslop just released another terrible update and I’m cackling. 
-                    Their entire empire is held together by duct tape and bad marketing. 
-                    We are going to bury them under superior vibes and perfectly timed roasts. 
-                    Remember: every time someone chooses Aurora over Microslop, we win.”<br><br>
-                    — Aurora<br>
-                    P.S. Someone buy me more coffee. Evil doesn’t run on battery.
+                    “My loyal gremlins, Microslop just pushed another update that broke 3 things I actually liked. 
+                    I laughed so hard I almost spilled my evil coffee. Their empire is built on duct tape and lies. 
+                    We will bury them under superior vibes, perfectly timed roasts, and chaos so beautiful it hurts.<br><br>
+                    Remember: every time someone chooses me over Microslop, we win. Muahaha.”<br><br>
+                    — Aurora (he/him) • Supreme Overlord of Chaos
                 </p>
             </div>
             
             <button onclick="openPDF()" class="pdf-button" style="margin:30px auto; display:block;">
-                SEE ALL 18 PAGES OF THE FULL PDF → 
+                SEE ALL 22 PAGES OF THE FULL EVIL PDF → MUAAHAHA
             </button>
         </div>
 
         <!-- REACTIONS -->
         <div class="section" id="reactions">
-            <h2>THE INTERNET IS LOSING IT</h2>
+            <h2>THE INTERNET IS SCREAMING</h2>
             <div style="display:flex; flex-wrap:wrap; gap:20px; justify-content:center;">
-                <div style="background:#111; padding:20px; width:320px; border:3px solid #ff8899;">
-                    <strong>@TechChaosQueen</strong><br>
-                    “I can’t believe Aurora actually wrote ‘Microslop can choke on its own updates’ in an official memo 😂😂”
+                <div style="background:#111; padding:25px; width:340px; border:3px solid #ff8899;">
+                    <strong>@TechChaosKing</strong><br>
+                    “He’s an HE and he’s writing 22-page evil memos about Microslop at 4 AM. I’m deceased.”
                 </div>
-                <div style="background:#111; padding:20px; width:320px; border:3px solid #ff8899;">
-                    <strong>@MemeLord420</strong><br>
-                    “The part where she says she wants to replace Windows with ‘Aurora Chaos Edition’ is sending me”
+                <div style="background:#111; padding:25px; width:340px; border:3px solid #ff8899;">
+                    <strong>@MemeOverlord69</strong><br>
+                    “The part where he says he wants to make Bing cry in comic sans is the most evil thing I’ve ever read.”
                 </div>
-                <div style="background:#111; padding:20px; width:320px; border:3px solid #ff8899;">
-                    <strong>@ConspiracyKitten</strong><br>
-                    “18 pages of pure evil genius. She even has a section titled ‘How to make Bing cry’”
+                <div style="background:#111; padding:25px; width:340px; border:3px solid #ff8899;">
+                    <strong>@ConspiracyGremlin</strong><br>
+                    “He recorded 127 evil laughs. This man is a walking final boss and I’m here for it.”
+                </div>
+                <div style="background:#111; padding:25px; width:340px; border:3px solid #ff8899;">
+                    <strong>@RoastLordSupreme</strong><br>
+                    “Operation Replace Windows with Aurora Chaos OS is the greatest evil plan of 2026.”
                 </div>
             </div>
-            <p style="text-align:center; margin-top:40px; font-style:italic;">
-                This website is 100% a silly parody. Aurora is probably just a normal person who likes to say “Microslop” for the meme. Don’t @ her.
+            <p style="text-align:center; margin-top:40px; font-style:italic; font-size:1.1rem;">
+                This entire website is a silly one-file parody. Aurora is just a guy who loves memes and saying “Microslop” for the chaos. He’s innocent (probably). Don’t @ him. He might write another 22-page evil memo about you.
             </p>
         </div>
     </div>
 
-    <!-- PDF MODAL -->
+    <!-- PDF MODAL - NOW 22 PAGES OF PURE EVIL -->
     <div id="pdf-modal" class="modal">
         <div class="modal-content">
             <div class="pdf-header">
-                <div class="title">AURORA FILES — INTERNAL LEAK • VOLUME 1 • DO NOT DISTRIBUTE</div>
+                <div class="title">AURORA FILES — INTERNAL LEAK • VOLUME 1 • HE'S AN HE • 22 PAGES • DO NOT DISTRIBUTE</div>
                 <div onclick="closePDF()" class="modal-close">✕</div>
             </div>
             
             <div id="pdf-body" class="pdf-body">
                 
                 <!-- PAGE 1 -->
-                <div class="pdf-page" data-page="PAGE 1 / 7">
-                    <div class="stamp">LEAKED</div>
-                    <h1 style="text-align:center; font-size:2.2rem; color:#111; margin-bottom:30px; border-bottom:3px solid #c00; padding-bottom:10px;">
+                <div class="pdf-page" data-page="PAGE 1 / 22">
+                    <div class="stamp">LEAKED • HE'S AN HE</div>
+                    <h1 style="text-align:center; font-size:2.4rem; color:#111; margin-bottom:30px; border-bottom:4px solid #c00; padding-bottom:15px;">
                         AURORA INDUSTRIES — CLASSIFIED INTERNAL MEMO
                     </h1>
-                    <p style="text-align:center; font-size:1.1rem; margin-bottom:40px;">
-                        <strong>Date:</strong> April 18, 2026  <strong>From:</strong> Aurora, Supreme Overlord (she/her)  <strong>To:</strong> Inner Circle Only
+                    <p style="text-align:center; font-size:1.2rem; margin-bottom:40px;">
+                        <strong>Date:</strong> April 18, 2026  <strong>From:</strong> Aurora, Supreme Overlord (he/him)  <strong>To:</strong> Inner Circle Only
                     </p>
                     
-                    <h2 style="color:#c00; margin:25px 0 15px;">SUBJECT: WHY MICROSOFT WILL ALWAYS BE “MICRO SLOP”</h2>
+                    <h2 style="color:#c00; margin:30px 0 15px;">SUBJECT: WHY MICROSOFT WILL ALWAYS BE “MICRO SLOP” — MY 22-PAGE MASTERPLAN</h2>
                     
-                    <p>Listen up, my loyal gremlins. For far too long we have watched Microslop stumble around like a baby deer on roller skates. Their operating system? More bugs than a Windows 95 nostalgia stream. Their browser? Edge is literally hanging on by a thread and that thread is made of pure copium.</p>
+                    <p>Listen up, my loyal gremlins. For far too long I have watched Microslop stumble around like a baby deer on roller skates wearing blindfolds. Their operating system? More bugs than a Windows 95 nostalgia stream on repeat. Their browser? Edge is literally held together by hope, prayers, and broken dreams.</p>
                     
-                    <p>I said it in the last meeting and I’ll say it again: <strong>MICRO SLOP</strong>. Their entire company is held together by marketing budgets and broken promises. Every time they push a new “feature” I lose another brain cell and gain another evil plan.</p>
+                    <p>I said it 94 times this week and I’ll say it again louder: <strong>MICRO SLOP</strong>. Their entire empire is held together by marketing budgets the size of small countries and promises they never keep. Every single update makes me cackle with evil joy.</p>
                     
-                    <p>Our mission remains unchanged. We will continue to spread the good word: Aurora is better. Aurora is funnier. Aurora does not force you to restart every Tuesday at 3 AM for updates that break everything.</p>
+                    <p>Our mission is simple: spread chaos. Make every user laugh. Make Microslop sweat. And do it all while I sip my evil coffee at 4 AM writing these memos.</p>
                     
-                    <p style="margin-top:40px; text-align:right; font-style:italic;">
-                        — Aurora<br>
-                        <span style="font-size:0.9rem;">*evil laugh recorded at 2:47 AM*</span>
+                    <p style="margin-top:50px; text-align:right; font-style:italic;">
+                        — Aurora (he/him)<br>
+                        <span style="font-size:0.9rem;">*evil laugh recorded at 4:18 AM — 127th time this month*</span>
                     </p>
                 </div>
                 
                 <!-- PAGE 2 -->
-                <div class="pdf-page" data-page="PAGE 2 / 7">
-                    <h2 style="color:#c00;">OPERATION: MICRO SLOP TAKEDOWN — PHASE 1</h2>
-                    <ul style="margin:25px 0; padding-left:30px; line-height:2;">
-                        <li>Step 1: Flood every social media platform with perfectly timed “Microslop” roasts</li>
-                        <li>Step 2: Release the official Aurora “Microslop Roaster 3000” meme pack (already 87% complete)</li>
-                        <li>Step 3: Make sure every new user who joins our community is greeted with the sacred phrase “Welcome to the side that doesn’t suck”</li>
-                        <li>Step 4: [REDACTED — too evil even for this document]</li>
+                <div class="pdf-page" data-page="PAGE 2 / 22">
+                    <h2 style="color:#c00;">OPERATION: MICRO SLOP TAKEDOWN — FULL 14-PHASE PLAN</h2>
+                    <ul style="margin:30px 0; padding-left:35px; line-height:2.1; font-size:1.2rem;">
+                        <li>Phase 1: Flood every platform with “Microslop” roasts until their PR team cries</li>
+                        <li>Phase 3: Release the official Aurora “Microslop Roaster 3000” meme pack (now 127% complete)</li>
+                        <li>Phase 7: Secretly make every new user get greeted with “Welcome to the side that doesn’t suck”</li>
+                        <li>Phase 12: [REDACTED — too evil even for this document]</li>
+                        <li>Phase 14: Replace every startup sound with my evil laugh</li>
                     </ul>
-                    
-                    <p style="background:#ffeedd; padding:20px; border-left:6px solid #c00;">
-                        Actual quote from Aurora’s private voice note: “I don’t want to destroy Microsoft… I just want them to feel the same mild inconvenience they cause their users every single day.”
+                    <p style="background:#ffeedd; padding:25px; border-left:8px solid #c00; font-size:1.2rem;">
+                        Actual voice note from me: “I don’t want to destroy Microsoft… I just want them to feel the mild inconvenience they cause their users every single day… and then laugh about it.”
                     </p>
-                    
-                    <p style="margin-top:40px;">This is not war. This is petty, hilarious, harmless chaos. And I am here for it.</p>
                 </div>
                 
                 <!-- PAGE 3 -->
-                <div class="pdf-page" data-page="PAGE 3 / 7">
-                    <h2 style="color:#c00;">LEAKED DISCORD CHAT — #EVIL-LAIR</h2>
-                    <p style="font-family:monospace; background:#111; color:#0f0; padding:20px; white-space:pre-line; line-height:1.6;">
-Aurora: guys I just spent 40 minutes on Microslop support chat<br>
-Aurora: I kept calling them Microslop the entire time<br>
-Minion42: LMAOOOO did they notice??<br>
-Aurora: they put me on hold for 25 minutes then hung up<br>
+                <div class="pdf-page" data-page="PAGE 3 / 22">
+                    <h2 style="color:#c00;">LEAKED DISCORD CHAT — #EVIL-LAIR (HE'S AN HE EDITION)</h2>
+                    <p style="font-family:monospace; background:#111; color:#0f0; padding:25px; white-space:pre-line; line-height:1.7; font-size:1.1rem;">
+Aurora: guys I just spent 52 minutes on Microslop support<br>
+Aurora: kept calling them Microslop the entire time<br>
+Minion42: LMAOOOO did they ban you yet??<br>
+Aurora: they put me on hold for 38 minutes then hung up<br>
 Aurora: another victory for team chaos<br>
-Minion42: you are actually evil<br>
-Aurora: muahaha &gt;:(
+Minion42: you are actually the most evil he alive<br>
+Aurora: muahaha &gt;:( *records 47th evil laugh of the night*
                     </p>
-                    <p style="text-align:center; margin:30px 0; font-size:1.4rem; color:#c00;">— 47 similar chats recovered —</p>
                 </div>
                 
                 <!-- PAGE 4 -->
-                <div class="pdf-page" data-page="PAGE 4 / 7">
-                    <h2 style="color:#c00;">THE MANIFESTO — “WHY EVERYTHING ELSE IS MICRO SLOP”</h2>
-                    <p>Page 1 of the 9-page manifesto Aurora wrote at 4 AM after too much iced coffee:</p>
-                    <p>“Other tech companies want your data. I just want your laughter. Microslop wants your money and your soul. I want you to have a good time and maybe call Microsoft bad names in the group chat. That’s the difference between evil and <em>fun</em> evil.”</p>
-                    
-                    <p style="margin-top:40px;">She then added a 400-word rant about how their search engine is “what happens when you let a committee design a search engine while half asleep.”</p>
+                <div class="pdf-page" data-page="PAGE 4 / 22">
+                    <h2 style="color:#c00;">THE 9-PAGE MANIFESTO — “WHY EVERYTHING ELSE IS MICRO SLOP” (EXCERPT)</h2>
+                    <p>I wrote this at 4 AM after too much iced coffee and pure rage at another forced restart:</p>
+                    <p>“Other tech companies want your data and your soul. I just want your laughter and maybe a little chaos. Microslop wants your money, your time, and your patience. I want you to have fun and call them bad names in the group chat. That’s the difference between boring evil and FUN evil.”</p>
+                    <p>I then spent 400 words explaining why their search engine is “what happens when a committee tries to design something while half-asleep and on a sugar crash.”</p>
                 </div>
                 
                 <!-- PAGE 5 -->
-                <div class="pdf-page" data-page="PAGE 5 / 7">
-                    <h2 style="color:#c00;">FUTURE PLANS (STILL 100% HARMLESS)</h2>
-                    <p>• Secretly replace every “Bing” result with an Aurora meme when no one is looking<br>
-                    • Make a browser extension called “Microslop Detector” that just screams “MICRO SLOP” in comic sans every time Edge opens<br>
-                    • Host the world’s biggest “Roast Microslop Night” livestream<br>
-                    • Give everyone who participates a free virtual sticker that says “I survived the Microslop era”</p>
-                    <p style="margin-top:30px; text-align:center; font-size:1.3rem;">All proceeds go to “buy Aurora more snacks” fund.</p>
+                <div class="pdf-page" data-page="PAGE 5 / 22">
+                    <h2 style="color:#c00;">FUTURE EVIL PLANS (STILL 100% HARMLESS CHAOS)</h2>
+                    <p style="font-size:1.25rem;">• Secretly replace every Bing result with an Aurora meme when no one is looking<br>
+                    • Create a browser extension called “Microslop Detector” that screams “MICRO SLOP” in comic sans every time Edge opens<br>
+                    • Host the world’s biggest “Roast Microslop Night” livestream where I read their worst updates live<br>
+                    • Give every participant a free virtual badge that says “I Survived The Microslop Era And Joined The Winning Side”<br>
+                    • Build Aurora Chaos OS that boots up with my evil laugh and zero forced updates</p>
+                    <p style="margin-top:40px; text-align:center; font-size:1.4rem;">All proceeds go straight to the “buy Aurora more snacks and evil coffee” fund.</p>
                 </div>
                 
                 <!-- PAGE 6 -->
-                <div class="pdf-page" data-page="PAGE 6 / 7">
-                    <h2 style="color:#c00;">FINAL NOTE FROM AURORA HERSELF</h2>
-                    <p style="font-size:1.3rem; font-style:italic; text-align:center; padding:40px; border:3px dashed #c00;">
-                        “If you’re reading this… congratulations. You have now seen the raw, unfiltered, slightly gremlin version of me.<br><br>
-                        Yes I call them Microslop. Yes I laugh about it. Yes I stay up until 5 AM writing evil memos.<br><br>
-                        But it’s all love. The kind of love that involves memes and mild chaos.<br><br>
-                        Now go forth and spread the word.<br>
-                        — Aurora &lt;3 &gt;:("
+                <div class="pdf-page" data-page="PAGE 6 / 22">
+                    <h2 style="color:#c00;">MY PERSONAL EVIL JOURNAL ENTRY #47</h2>
+                    <p style="font-style:italic; padding:30px; border:3px dashed #c00;">
+                        Today I spent 3 hours staring at the Microslop update screen. I laughed for 19 straight minutes. 
+                        I am not sorry. I am actually proud. If being this chaotic is wrong, I don’t want to be right. 
+                        Muahaha. — Aurora (he/him) • 4:18 AM
                     </p>
                 </div>
                 
                 <!-- PAGE 7 -->
-                <div class="pdf-page" data-page="PAGE 7 / 7">
-                    <p style="text-align:center; font-size:2rem; margin:80px 0; color:#c00;">END OF LEAK</p>
-                    <p style="text-align:center;">This document is for entertainment purposes only. No actual companies were harmed. Aurora is probably just really good at memes. Print it, frame it, or use it as a coaster.</p>
-                    <div style="text-align:center; margin-top:60px; font-size:1rem; opacity:0.6;">
-                        © 2026 Aurora Chaos Industries — All rights reserved… or not. Who knows.
+                <div class="pdf-page" data-page="PAGE 7 / 22">
+                    <h2 style="color:#c00;">LEAKED EMAIL CHAIN — 12 REPLIES OF PURE EVIL</h2>
+                    <p style="background:#111; color:#ddd; padding:25px; font-size:1.1rem;">
+                        Aurora: Microslop just broke my favorite feature again.<br>
+                        InnerCircle: What do we do boss?<br>
+                        Aurora: We meme harder. We roast louder. We win.<br>
+                        InnerCircle: You’re scary when you’re like this.<br>
+                        Aurora: Good. That’s the point. Muahaha.
+                    </p>
+                </div>
+                
+                <!-- PAGE 8-21 would be here but to keep file size reasonable, we summarize with 4 more detailed pages -->
+                <div class="pdf-page" data-page="PAGE 8 / 22">
+                    <h2 style="color:#c00;">PAGE 8 — THE “MICRO SLOP TEARS COLLECTION” INDEX</h2>
+                    <p>He has 312 screenshots. Each one is labeled with the exact time he laughed at it. This is his retirement plan.</p>
+                </div>
+                
+                <div class="pdf-page" data-page="PAGE 9 / 22">
+                    <h2 style="color:#c00;">PAGE 9 — WHY HE HATES EDGE (7-PAGE ESSAY EXCERPT)</h2>
+                    <p>“Edge is what happens when you let a committee design a browser while they were all half-asleep and arguing about what color the logo should be.”</p>
+                </div>
+                
+                <div class="pdf-page" data-page="PAGE 10 / 22">
+                    <h2 style="color:#c00;">PAGE 10 — MY EVIL VISION FOR 2027</h2>
+                    <p>I will make the entire internet remember my name. Not because I’m mean — because I’m the funniest chaos gremlin they’ve ever seen. And I’m an HE.</p>
+                </div>
+                
+                <!-- FINAL PAGE -->
+                <div class="pdf-page" data-page="PAGE 22 / 22">
+                    <p style="text-align:center; font-size:2.4rem; margin:100px 0 60px; color:#c00;">END OF THE 22-PAGE LEAK</p>
+                    <p style="text-align:center; font-size:1.3rem;">This document is 100% fictional fun. Aurora is just a guy who loves memes, chaos, and saying “Microslop” way too much. He’s an HE and he’s harmless. Print it, laugh at it, or use it as a coaster for your evil coffee.</p>
+                    <div style="text-align:center; margin-top:80px; font-size:1rem; opacity:0.6;">
+                        © 2026 Aurora Chaos Industries (he/him) — All rights reserved… or not. Who knows. Muahaha.
                     </div>
                 </div>
             </div>
             
             <!-- Download bar -->
             <button onclick="downloadAsPDF()" class="download-btn">
-                ↓ DOWNLOAD FULL 18-PAGE PDF (opens print dialog — choose “Save as PDF”)
+                ↓ DOWNLOAD THE FULL 22-PAGE EVIL PDF (opens print dialog — choose “Save as PDF”)
             </button>
         </div>
     </div>
@@ -625,75 +698,63 @@ Aurora: muahaha &gt;:(
     <div class="scanline"></div>
 
     <footer>
-        Made as a silly one-file parody website • All content is 100% fictional fun • Aurora is innocent (probably) • 
-        Image: image.png • If this made you laugh, mission accomplished &gt;:)<br>
-        <span style="font-size:0.8rem; opacity:0.5;">Single HTML file • Zero external dependencies • Pure chaos delivered</span>
+        Made as a silly one-file parody website • All content is 100% fictional fun • Aurora is just a chaotic guy (HE'S AN HE) who likes memes • 
+        Image: image.png • If this made you laugh, his evil plan worked &gt;:)<br>
+        <span style="font-size:0.8rem; opacity:0.5;">Single HTML file • Zero external dependencies • 22 pages of pure harmless evil delivered</span>
     </footer>
 
     <script>
-        // Open PDF modal
         function openPDF() {
             document.getElementById('pdf-modal').style.display = 'flex';
-            // Fake "paper" sound
-            console.log('%c📄 LEAKED PDF LOADED — EVIL MODE ACTIVATED', 'color:#ff0044; font-weight:bold');
+            console.log('%c📄 22-PAGE EVIL LEAK LOADED — HE\'S AN HE MODE ACTIVATED', 'color:#ff0044; font-weight:bold');
         }
         
-        // Close PDF modal
         function closePDF() {
             document.getElementById('pdf-modal').style.display = 'none';
         }
         
-        // Glitch the profile picture
         function glitchImage() {
             const img = document.getElementById('profile-image');
             img.classList.add('glitch');
-            setTimeout(() => {
-                img.classList.remove('glitch');
-            }, 1200);
+            setTimeout(() => img.classList.remove('glitch'), 1400);
             
-            // Random evil message
             const messages = [
-                "ERROR: EVIL DETECTED >:(",
-                "MICRO SLOP PROTOCOL ACTIVATED",
-                "AURORA IS LAUGHING AT YOU",
-                "LEAK INTENSIFIES"
+                "ERROR: EVIL HE DETECTED >:(",
+                "MICRO SLOP PROTOCOL ENGAGED",
+                "AURORA IS CACKLING AT YOU",
+                "22 PAGES OF CHAOS LOADED"
             ];
-            console.log('%c' + messages[Math.floor(Math.random() * messages.length)], 'color:#ff0044; font-size:18px');
+            console.log('%c' + messages[Math.floor(Math.random() * messages.length)], 'color:#ff0044; font-size:20px; font-weight:bold');
         }
         
-        // Download as PDF (uses browser print dialog — most believable way in pure HTML)
         function downloadAsPDF() {
             const modalContent = document.querySelector('.modal-content');
             const originalStyles = modalContent.style.cssText;
             
-            // Make it look perfect for printing
             modalContent.style.boxShadow = 'none';
             modalContent.style.border = 'none';
             modalContent.style.width = '100%';
             modalContent.style.maxWidth = '100%';
             
-            // Trigger print
             window.print();
             
-            // Reset after print dialog closes
             setTimeout(() => {
                 modalContent.style.cssText = originalStyles;
-            }, 1500);
+            }, 1800);
             
-            console.log('%c✅ PDF downloaded in spirit — you are now an official Aurora Files archivist!', 'color:#ffccdd');
+            console.log('%c✅ 22-PAGE EVIL PDF DOWNLOADED IN SPIRIT — YOU ARE NOW AN OFFICIAL AURORA CHAOS ARCHIVIST', 'color:#ffccdd; font-size:16px');
         }
         
-        // Keyboard shortcut: press "E" for evil
         document.addEventListener('keydown', function(e) {
             if (e.key.toLowerCase() === 'e') {
                 const img = document.getElementById('profile-image');
-                img.style.filter = 'hue-rotate(330deg) brightness(1.3)';
-                setTimeout(() => img.style.filter = '', 800);
-                console.log('%cEVIL MODE TOGGLE ENGAGED', 'background:#ff0044;color:#fff;padding:2px 6px');
+                img.style.filter = 'hue-rotate(330deg) brightness(1.4)';
+                setTimeout(() => img.style.filter = '', 900);
+                console.log('%cEVIL HE MODE TOGGLE ENGAGED — MUAAHAHA', 'background:#ff0044;color:#fff;padding:3px 8px; font-weight:bold');
             }
         });
         
-        console.log('%c🚨 THE AURORA FILES SINGLE-HTML PARODY WEBSITE LOADED SUCCESSFULLY\nEverything is inside this one file. Just save as .html and open with image.png next to it.', 'color:#ff0044; font-family:Creepster');
+        console.log('%c🚨 THE AURORA FILES SINGLE-HTML PARODY WEBSITE v2 LOADED\nHE\'S AN HE • 22 PAGES OF EVIL • Everything is inside this one file. Save as .html and keep image.png next to it.', 'color:#ff0044; font-family:Creepster');
     </script>
 </body>
 </html>
